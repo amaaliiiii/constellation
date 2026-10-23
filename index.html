@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Constellation · Checkout multi-orden · Flujo paso a paso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#00B37E;--green-dark:#00936A;--turbo:#13BEC3;
+    --ink:#1C1C1E;--ink-2:#2B2B2E;--gray:#8E8E93;--gray-2:#AEAEB2;
+    --line:#ECECEC;--bg:#0E0F12;--panel:#17191F;--panel-2:#1E212A;
+    --cream:#FBECD2;--cream-ink:#9A6B16;--strike:#C9A24B;--red:#E23744;
+    --amber:#E8A838;--amber-bg:#2A2416;--blue:#4D8DF5;
+    --side:#14161C;--side-line:#262A33;--txt-soft:#A9B0BD;--txt-dim:#6B7280;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --accent:#00B37E;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+  body{font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:#E9ECF1;display:flex;height:100vh;overflow:hidden;}
+
+  /* SIDEBAR */
+  .sidebar{width:270px;flex-shrink:0;background:var(--side);border-right:1px solid var(--side-line);display:flex;flex-direction:column;height:100vh;}
+  .sb-head{padding:20px 18px 16px;border-bottom:1px solid var(--side-line);}
+  .sb-head .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;}
+  .sb-head .logo .dot{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--green),var(--turbo));display:flex;align-items:center;justify-content:center;font-size:12px;}
+  .sb-head .sub{font-size:11.5px;color:var(--txt-dim);margin-top:6px;}
+  .flows{flex:1;overflow-y:auto;padding:12px 10px 30px;}
+  .flows::-webkit-scrollbar{width:7px;}.flows::-webkit-scrollbar-thumb{background:#2c313c;border-radius:4px;}
+  .flow{margin-bottom:8px;border:1px solid var(--side-line);border-radius:12px;overflow:hidden;}
+  .flow-h{padding:11px 13px;cursor:pointer;user-select:none;background:#171a21;}
+  .flow-h .fn{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .flow-h .fn .d{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .flow-h .fs{font-size:10.5px;color:var(--txt-dim);margin-top:2px;margin-left:16px;}
+  .flow.collapsed .steps{display:none;}
+  .steps{padding:4px;}
+  .step{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:8px;cursor:pointer;font-size:12px;color:var(--txt-soft);}
+  .step:hover{background:#1b1e26;color:#fff;}
+  .step.active{background:#20242e;color:#fff;}
+  .step .sn{width:20px;height:20px;border-radius:6px;background:#262a33;font-family:var(--mono);font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#aab4c6;}
+  .step.active .sn{background:var(--accent);color:#fff;}
+
+  /* STAGE */
+  .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;background:radial-gradient(circle at 50% 22%,#1a1d24 0%,#0e0f12 72%);position:relative;padding:18px;gap:16px;}
+  .phonewrap{position:relative;}
+  .phone{width:372px;height:752px;background:#fff;border-radius:40px;overflow:hidden;color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 10px #000,0 0 0 11px #2a2a2a;position:relative;}
+  .screen{height:100%;overflow-y:auto;position:relative;scrollbar-width:none;}
+  .screen::-webkit-scrollbar{display:none;}
+  .fade{animation:fade .28s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  /* pins overlay */
+  .pinlayer{position:absolute;inset:0;pointer-events:none;z-index:40;border-radius:40px;overflow:hidden;}
+  .pin-no{position:absolute;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.35);border:2.5px solid #fff;transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;transition:transform .15s;}
+  .pin-no:hover,.pin-no.hot{transform:translate(-50%,-50%) scale(1.25);}
+  .pin-no.hot{box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 30%,transparent);}
+  /* stepper bar */
+  .stepbar{display:flex;align-items:center;gap:14px;background:#15171d;border:1px solid var(--side-line);border-radius:30px;padding:8px 10px;}
+  .navbtn{width:40px;height:40px;border-radius:50%;background:#1f232c;border:1px solid var(--side-line);color:#E9ECF1;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;}
+  .navbtn:hover:not(:disabled){background:var(--accent);border-color:var(--accent);}
+  .navbtn:disabled{opacity:.35;cursor:not-allowed;}
+  .stepinfo{text-align:center;min-width:220px;}
+  .stepinfo .sp{font-size:10.5px;color:var(--txt-dim);font-family:var(--mono);letter-spacing:.5px;}
+  .stepinfo .st{font-size:14px;font-weight:600;margin-top:1px;}
+  .dots{display:flex;gap:6px;justify-content:center;margin-top:6px;}
+  .dots i{width:7px;height:7px;border-radius:50%;background:#2c313c;}
+  .dots i.on{background:var(--accent);width:18px;border-radius:4px;}
+
+  /* DOCS */
+  .docs{width:360px;flex-shrink:0;background:var(--panel);border-left:1px solid var(--side-line);height:100vh;overflow-y:auto;padding:24px 22px 60px;}
+  .docs::-webkit-scrollbar{width:7px;}.docs::-webkit-scrollbar-thumb{background:#2c313c;border-radius:4px;}
+  .docs .crumb{font-size:11px;color:var(--txt-dim);letter-spacing:.4px;text-transform:uppercase;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .docs .crumb .d{width:9px;height:9px;border-radius:50%;background:var(--accent);}
+  .docs h2{font-size:19px;font-weight:700;margin:8px 0 6px;line-height:1.2;}
+  .docs .lead{font-size:12.5px;color:var(--txt-soft);line-height:1.5;}
+  .legend{margin-top:22px;display:flex;flex-direction:column;gap:10px;}
+  .lg{display:flex;gap:11px;padding:11px 12px;border:1px solid var(--side-line);border-radius:12px;background:var(--panel-2);cursor:pointer;transition:.15s;}
+  .lg:hover{border-color:var(--accent);}
+  .lg .n{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .lg .lt{font-size:12.5px;font-weight:600;color:#fff;}
+  .lg .lx{font-size:11.5px;color:var(--txt-soft);line-height:1.45;margin-top:2px;}
+  .goes{margin-top:20px;background:var(--panel-2);border:1px solid var(--side-line);border-left:3px solid var(--accent);border-radius:10px;padding:12px 13px;}
+  .goes .gl{font-size:10px;color:var(--txt-dim);text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+  .goes .gt{font-size:12.5px;color:#E9ECF1;margin-top:4px;font-family:var(--mono);line-height:1.4;}
+  .qbox{margin-top:16px;background:var(--amber-bg);border:1px solid #3a3220;border-radius:12px;padding:12px 13px;}
+  .qbox h4{font-size:10px;color:#c9a24b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+  .qbox ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+  .qbox li{font-size:11.5px;color:#D9CFB4;line-height:1.4;padding-left:14px;position:relative;}
+  .qbox li::before{content:"";position:absolute;left:0;top:6px;width:5px;height:5px;border-radius:50%;background:var(--amber);}
+
+  /* ===== PHONE SCREEN STYLES ===== */
+  .topbar{position:sticky;top:0;z-index:20;background:#fff;display:flex;align-items:center;gap:12px;padding:16px 18px 12px;}
+  .topbar .back{font-size:22px;color:var(--ink);line-height:1;}
+  .topbar h1{font-size:16.5px;font-weight:600;flex:1;}
+  .crown{font-size:19px;}
+  .map{position:relative;height:112px;background:linear-gradient(115deg,#e8efe4,#eef1ea 40%,#e9f0f4);overflow:hidden;}
+  .map .road{position:absolute;background:#fff;opacity:.95;}
+  .r1{height:7px;width:160%;top:36px;left:-20%;transform:rotate(-8deg);}
+  .r2{height:5px;width:160%;top:78px;left:-20%;transform:rotate(-14deg);}
+  .r3{width:7px;height:160%;left:72%;top:-20%;transform:rotate(10deg);}
+  .r4{width:5px;height:160%;left:28%;top:-30%;transform:rotate(6deg);background:#f6f3ec;}
+  .maplabel{position:absolute;font-size:9px;color:#9aa0a6;font-weight:500;}
+  .gmark{position:absolute;left:8px;bottom:24px;font-size:10px;color:#80868b;font-weight:600;}
+  .pin-dot{position:absolute;left:66px;top:32px;width:12px;height:12px;border-radius:50%;background:#2f6fed;border:2px solid #fff;box-shadow:0 0 0 4px rgba(47,111,237,.25);}
+  .pin{position:absolute;left:100px;top:16px;}
+  .pin .head{width:32px;height:32px;border-radius:50% 50% 50% 2px;transform:rotate(45deg);background:#17171a;display:flex;align-items:center;justify-content:center;}
+  .pin .head svg{transform:rotate(-45deg);}
+  .adjust{position:absolute;left:50%;bottom:9px;transform:translateX(-50%);background:#fff;border-radius:20px;padding:7px 14px;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;box-shadow:0 3px 10px rgba(0,0,0,.14);white-space:nowrap;}
+  .row{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line);}
+  .row .ricon{width:22px;display:flex;justify-content:center;flex-shrink:0;}
+  .row .rtext{flex:1;min-width:0;}.row .t1{font-size:14px;font-weight:500;}.row .t2{font-size:12.5px;color:var(--gray);margin-top:1px;}
+  .row .link{color:var(--green);font-weight:500;}
+  .chev{color:var(--gray-2);font-size:17px;}
+  .divider{height:8px;background:#F4F4F5;}
+  .section{padding:17px 18px 4px;}
+  .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .section-head h2{font-size:15.5px;font-weight:600;}
+  .btn-change{background:#fff;border:1.5px solid #E2E2E6;border-radius:20px;padding:6px 16px;font-size:12.5px;font-weight:600;color:var(--ink);font-family:inherit;}
+  .pay-row{display:flex;align-items:center;gap:12px;padding:4px 0 14px;border-bottom:1px solid var(--line);}
+  .visa{width:34px;height:22px;border-radius:4px;background:#1A1F71;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .visa span{color:#fff;font-size:10px;font-weight:700;font-style:italic;letter-spacing:.5px;}
+  .pt1{font-size:14px;font-weight:500;display:flex;align-items:center;gap:6px;}
+  .pt2{font-size:10.5px;color:var(--gray-2);letter-spacing:.3px;margin-top:1px;}
+  .caret{color:var(--gray);font-size:11px;}
+  .info-line{display:flex;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);}
+  .info-line .ic{color:var(--gray-2);flex-shrink:0;margin-top:1px;}
+  .info-line p{font-size:12.5px;color:var(--gray);line-height:1.45;}
+  .credit-row{display:flex;align-items:center;gap:10px;padding:15px 0;border-bottom:1px solid var(--line);}
+  .credit-row .ca{font-size:14px;font-weight:500;flex:1;}
+  .vermas{font-size:13px;color:var(--gray);font-weight:500;}
+  .checkbox{width:22px;height:22px;border:2px solid #D1D1D6;border-radius:6px;flex-shrink:0;}
+  .coupon-row{display:flex;align-items:center;padding:15px 0;}.coupon-row .ca{flex:1;font-size:14px;font-weight:500;}
+  .deliv-card{padding:15px 18px;border-bottom:1px solid var(--line);}
+  .deliv-top{display:flex;align-items:center;gap:12px;}
+  .logo{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .logo.mcd{background:var(--red);}.logo.turbo{background:var(--turbo);}.logo.market{background:#F5A623;}
+  .deliv-top .dt{flex:1;}.deliv-top .n{font-size:14.5px;font-weight:600;}
+  .deliv-top .p{font-size:12.5px;color:var(--gray);text-decoration:underline;margin-top:1px;}
+  .trash{color:#C7C7CC;}
+  .eta-row{display:flex;align-items:center;gap:11px;border:1.5px solid #ECECEC;border-radius:12px;padding:11px 13px;margin-top:12px;}
+  .radio{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .radio.red{background:var(--red);}.radio.teal{background:var(--turbo);}.radio.amber{background:#F5A623;}
+  .eta-mid{flex:1;}.eta-mid .e1{font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:5px;}
+  .e1.red{color:var(--red);}.e1.teal{color:var(--turbo);}.e1.amber{color:#D98200;}
+  .eta-mid .e2{font-size:12px;color:var(--gray);margin-top:1px;}
+  .cambiar{font-size:13px;font-weight:600;color:var(--ink);text-decoration:underline;}
+  .tip-label{font-size:12.5px;color:var(--gray);margin:13px 0 8px;}
+  .tips{display:flex;gap:8px;}
+  .tip{border:1.5px solid #E2E2E6;border-radius:20px;padding:7px 0;flex:1;text-align:center;font-size:13px;font-weight:500;background:#fff;}
+  .tip.sel{border-color:var(--ink);font-weight:600;}
+  .tip.otro{display:flex;align-items:center;justify-content:center;gap:5px;color:var(--gray);}
+  .subtotal{display:flex;align-items:center;justify-content:space-between;margin-top:14px;}
+  .subtotal .sl{display:flex;align-items:center;gap:5px;font-size:14px;font-weight:500;}
+  .subtotal .cv{color:var(--gray);font-size:11px;}.subtotal .sv{font-size:14.5px;font-weight:600;}
+  .summary{padding:17px 18px;}
+  .summary h2{font-size:15.5px;font-weight:600;margin-bottom:13px;}
+  .sum-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:13.5px;}
+  .sum-row .lbl{display:flex;align-items:center;gap:6px;color:var(--ink-2);}.sum-row .lbl .i{color:var(--gray-2);}
+  .sum-row .val .old{color:var(--strike);text-decoration:line-through;margin-right:7px;font-weight:500;}
+  .sum-row .val .new{font-weight:600;}
+  .sum-row.total{padding-top:12px;margin-top:3px;border-top:1px solid var(--line);}
+  .sum-row.total .lbl{font-size:15px;font-weight:600;}.sum-row.total .val{font-size:15px;font-weight:700;}
+  .pro-banner{margin:13px 0 6px;background:var(--cream);border-radius:14px;padding:12px 15px;display:flex;align-items:center;gap:11px;}
+  .pro-banner .pc{font-size:18px;}.pro-banner p{font-size:12.5px;color:var(--cream-ink);line-height:1.4;font-weight:500;}.pro-banner b{font-weight:700;}
+  .bottombar{position:sticky;bottom:0;z-index:20;background:#fff;border-top:1px solid var(--line);padding:12px 18px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
+  .bottombar .l{font-size:11.5px;color:var(--gray);}.bottombar .v{font-size:20px;font-weight:700;}
+  .continuar{background:var(--green);color:#fff;border:none;border-radius:26px;padding:14px 32px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 6px 16px rgba(0,179,126,.35);}
+  .continuar:disabled{background:#D8DADF;color:#fff;box-shadow:none;}
+  .warn-card{margin:4px 0 0;background:#FFF4F4;border:1px solid #F7D4D7;border-radius:12px;padding:12px 13px;display:flex;gap:10px;}
+  .warn-card .wi{color:var(--red);flex-shrink:0;margin-top:1px;}.warn-card p{font-size:12.5px;color:#B0323C;line-height:1.4;font-weight:500;}
+  .methods{margin-top:6px;}
+  .method{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);}
+  .method.off{opacity:.45;}.method .mname{flex:1;font-size:14px;font-weight:500;}
+  .method .mbadge{font-size:10.5px;color:var(--red);font-weight:600;}
+  .mradio{width:20px;height:20px;border-radius:50%;border:2px solid #D1D1D6;}
+  .mradio.on{border-color:var(--green);background:radial-gradient(circle,#fff 34%,var(--green) 38%);}
+  .state{height:100%;display:flex;flex-direction:column;padding:0 22px;}
+  .state .sclose{padding:18px 0 0;font-size:22px;color:var(--ink);}
+  .state .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+  .pulse{width:92px;height:92px;border-radius:50%;position:relative;margin-bottom:26px;display:flex;align-items:center;justify-content:center;}
+  .pulse .ring{position:absolute;inset:0;border-radius:50%;border:3px solid var(--green);opacity:0;animation:ring 1.8s ease-out infinite;}
+  .pulse .ring:nth-child(2){animation-delay:.6s;}.pulse .ring:nth-child(3){animation-delay:1.2s;}
+  @keyframes ring{0%{transform:scale(.55);opacity:.9;}100%{transform:scale(1.25);opacity:0;}}
+  .pulse .core{width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--turbo));display:flex;align-items:center;justify-content:center;}
+  .spin{width:66px;height:66px;border-radius:50%;border:5px solid #EDEDED;border-top-color:var(--green);animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .state h2{font-size:24px;font-weight:700;line-height:1.2;margin-bottom:12px;}
+  .state .ssub{font-size:13.5px;color:var(--gray);line-height:1.5;max-width:250px;}
+  .pillrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+  .ipill{background:#F4F4F5;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:500;color:var(--ink-2);display:flex;align-items:center;gap:6px;}
+  .mini-cards{width:100%;margin-top:26px;display:flex;flex-direction:column;gap:10px;}
+  .mcard{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:13px 14px;text-align:left;}
+  .mcard .mt{flex:1;}.mcard .mt .a{font-size:13.5px;font-weight:600;}.mcard .mt .b{font-size:12px;color:var(--gray);margin-top:1px;}
+  .mcard .amt{font-size:14px;font-weight:700;}
+  .st-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .st-dot.pend{background:var(--amber);}.st-dot.ok{background:var(--green);}.st-dot.err{background:var(--red);}
+  .minispin{width:18px;height:18px;border:2.5px solid #EDEDED;border-top-color:var(--amber);border-radius:50%;animation:spin .9s linear infinite;flex-shrink:0;}
+  .state-foot{padding:14px 0 24px;}
+  .btn-ghost{width:100%;background:#fff;border:1.5px solid #E2E2E6;border-radius:26px;padding:14px;font-size:14.5px;font-weight:600;color:var(--ink);cursor:pointer;font-family:inherit;}
+  .btn-solid{width:100%;background:var(--green);border:none;border-radius:26px;padding:15px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+  .btn-danger{width:100%;background:#fff;border:1.5px solid #F2C2C6;border-radius:26px;padding:14px;font-size:14.5px;font-weight:600;color:var(--red);cursor:pointer;font-family:inherit;}
+  .note-strip{background:#FFFBEF;border:1px dashed #E8D08A;border-radius:10px;padding:10px 12px;font-size:11.5px;color:#9A7A1E;line-height:1.4;margin-top:14px;display:flex;gap:8px;}
+  .big-icon{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;}
+  .big-icon.ok{background:#E4F8F0;}.big-icon.err{background:#FDEBEC;}
+  .opt{display:flex;align-items:center;gap:13px;border:1.5px solid #E6E6EA;border-radius:14px;padding:14px;width:100%;text-align:left;cursor:pointer;background:#fff;}
+  .opt .oi{width:38px;height:38px;border-radius:10px;background:#F4F4F5;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .opt .ot{flex:1;}.opt .ot .a{font-size:14px;font-weight:600;}.opt .ot .b{font-size:12px;color:var(--gray);margin-top:1px;}
+  .proposal{position:absolute;top:16px;right:18px;background:#FFF4D6;color:#9A6B16;border:1px solid #E8D08A;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.4px;z-index:25;font-family:var(--mono);}
+  .codebox{display:flex;gap:8px;margin-top:18px;justify-content:center;}
+  .codebox span{width:38px;height:46px;border:1.5px solid #E2E2E6;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:var(--ink);}
+  .codebox span.filled{border-color:var(--ink);background:#FAFAFA;}
+  .codebox span.sep{border:none;color:var(--gray-2);width:10px;}
+</style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sb-head"><div class="logo"><span class="dot">✦</span> Constellation</div><div class="sub">Checkout multi-orden · paso a paso</div></div>
+    <nav class="flows" id="flows"></nav>
+  </aside>
+
+  <main class="stage">
+    <div class="phonewrap">
+      <div class="phone"><div class="screen" id="screen"></div><div class="pinlayer" id="pins"></div></div>
+    </div>
+    <div class="stepbar">
+      <button class="navbtn" id="prev">‹</button>
+      <div class="stepinfo"><div class="sp" id="sp">PASO 1 DE 4</div><div class="st" id="st">Checkout</div><div class="dots" id="dots"></div></div>
+      <button class="navbtn" id="next">›</button>
+    </div>
+  </main>
+
+  <aside class="docs" id="docs"></aside>
+
+<script>
+const S={back:'‹',
+  trash:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C7C7CC" stroke-width="1.8"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/></svg>',
+  bolt:(c)=>`<svg width="12" height="12" viewBox="0 0 24 24" fill="${c}"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>`,
+  check:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>',
+  pen:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16z"/></svg>',
+  mcd:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFC72C" stroke-width="2.4"><path d="M4 20V8c0-2 3-2 3 0v6c0-5 3-5 3 0V8c0-2 4-2 4 0v6c0-5 3-5 3 0v6"/></svg>',
+  turbo:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>',
+  cart:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M7 4h-2l-1 2 2 11h12l2-9H6"/><circle cx="9" cy="20" r="1.4" fill="#fff"/><circle cx="16" cy="20" r="1.4" fill="#fff"/></svg>'};
+const MAP=`<div class="map"><div class="road r4"></div><div class="road r1"></div><div class="road r2"></div><div class="road r3"></div><span class="maplabel" style="top:28px;left:46px;">Toll</span><span class="maplabel" style="top:12px;right:24px;">C. Río Lima</span><span class="gmark">Google</span><div class="pin-dot"></div><div class="pin"><div class="head"><svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M12 3 3 10v11h6v-6h6v6h6V10z"/></svg></div></div><div class="adjust"><svg width="13" height="13" viewBox="0 0 24 24" fill="#17171a"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Ajustar punto de entrega</div></div>`;
+const ADDRESS=`<div class="row"><span class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" stroke-width="1.8"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div class="rtext"><div class="t1">Mi casa</div><div class="t2">Carrera 11 #82-01</div></div><span class="chev">›</span></div><div class="row"><span class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg></span><div class="rtext"><div class="t1">Detalles</div><div class="t2">Edificio 82, Apto 1202</div></div><span class="chev">›</span></div><div class="row"><span class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><div class="rtext"><div class="t1">Déjalo en recepción</div><div class="t2 link">Agregar instrucciones</div></div><span class="chev">›</span></div>`;
+function deliv(o){return `<div class="deliv-card"><div class="deliv-top"><span class="logo ${o.logo}">${o.logoSvg}</span><div class="dt"><div class="n">${o.name}</div><div class="p">${o.products} productos</div></div><span class="trash">${S.trash}</span></div><div class="eta-row"><span class="radio ${o.color}">${S.check}</span><div class="eta-mid"><div class="e1 ${o.color}">${o.bolt?S.bolt(o.boltC):''}${o.title}</div><div class="e2">${o.time}</div></div><span class="cambiar">Cambiar</span></div><div class="tip-label">Propina:</div><div class="tips"><span class="tip sel">$1.000</span><span class="tip">$2.000</span><span class="tip">$3.000</span><span class="tip otro">Otro ${S.pen}</span></div><div class="subtotal"><span class="sl">Subtotal entrega ${o.idx} <span class="cv">▾</span></span><span class="sv">${o.subtotal}</span></div></div>`;}
+const D_MCD={logo:'mcd',logoSvg:S.mcd,name:"McDonald's Turbo",products:5,color:'red',bolt:true,boltC:'#E23744',title:'Más rápido',time:'12 - 15 min',idx:1,subtotal:'$91.850'};
+const D_TURBO={logo:'turbo',logoSvg:S.turbo,name:'Turbo',products:5,color:'teal',bolt:false,title:'Turbo',time:'8 - 10 min',idx:2,subtotal:'$32.600'};
+const D_MARKET={logo:'market',logoSvg:S.turbo,name:'Market Turbo',products:3,color:'amber',bolt:false,title:'Turbo',time:'15 - 20 min',idx:3,subtotal:'$28.400'};
+function checkout(cfg){const n=cfg.deliveries.length;const pay=cfg.payWarning?`<div class="warn-card"><span class="wi"><svg width="18" height="18" viewBox="0 0 24 24" fill="#E23744"><path d="M12 2 1 21h22z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><rect x="11" y="17" width="2" height="2" fill="#fff"/></svg></span><p>Pago en efectivo no está disponible para todas tus tiendas. Elige un método válido para las ${n} entregas.</p></div><div class="methods"><div class="method"><span class="visa"><span>VISA</span></span><span class="mname">Crédito *2122</span><span class="mradio on"></span></div><div class="method off"><span class="ricon">💵</span><span class="mname">Efectivo <span class="mbadge">No válido para Turbo</span></span><span class="mradio"></span></div><div class="method off"><span class="ricon">🟣</span><span class="mname">PSE <span class="mbadge">Excluido</span></span><span class="mradio"></span></div></div>`:`<div class="pay-row"><span class="visa"><span>VISA</span></span><div><div class="pt1">Crédito *2122 • 1 cuota <span class="caret">▾</span></div><div class="pt2">DETAIL INFORMATION</div></div></div><div class="info-line"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#AEAEB2" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.6" fill="#AEAEB2"/></svg></span><p>Haremos ${n} cobros a tu método de pago, uno por cada entrega incluidos los cargos.</p></div><div class="credit-row"><span class="ca">$80.000 Créditos</span><span class="vermas">Ver más</span><span class="checkbox"></span></div><div class="coupon-row"><span class="ca">Cupones</span><span class="chev">›</span></div>`;
+  return `<div class="fade"><div class="topbar"><span class="back">${S.back}</span><h1>Terminar y pagar</h1><span class="crown">👑</span></div>${MAP}${ADDRESS}<div class="divider"></div><div class="section"><div class="section-head"><h2>Método de pago</h2><button class="btn-change">Cambiar</button></div>${pay}</div><div class="divider"></div><div class="section" style="padding-bottom:0;"><div class="section-head"><h2>Este pedido tiene ${n} entregas</h2></div></div>${cfg.deliveries.map(deliv).join('')}<div class="divider"></div><div class="summary"><h2>Resumen de tu pedido</h2><div class="sum-row"><span class="lbl">Costo de productos <span class="i">ⓘ</span></span><span class="val"><span class="old">${cfg.oProd}</span><span class="new">${cfg.nProd}</span></span></div><div class="sum-row"><span class="lbl">Costo de envío <span class="i">ⓘ</span></span><span class="val"><span class="old">$5.000</span><span class="new">$0</span></span></div><div class="sum-row"><span class="lbl">Tarifa de servicio <span class="i">ⓘ</span></span><span class="val"><span class="old">$7.000</span><span class="new">$4.000</span></span></div><div class="sum-row"><span class="lbl">Más rápido</span><span class="val"><span class="old">$2.000</span><span class="new">$0</span></span></div><div class="sum-row"><span class="lbl">Propina</span><span class="val"><span class="new">${cfg.tip}</span></span></div><div class="sum-row total"><span class="lbl">Total a pagar</span><span class="val">${cfg.total}</span></div><div class="pro-banner"><span class="pc">👑</span><p>Ahorras <b>${cfg.save}</b> con Pro Black y promociones adicionales.</p></div></div><div style="height:4px"></div><div class="bottombar"><div><div class="l">Total a pagar</div><div class="v">${cfg.total}</div></div><button class="continuar" ${cfg.payWarning?'disabled':''}>Continuar</button></div></div>`;}
+
+const SCREENS={
+  'checkout-base':()=>checkout({deliveries:[D_MCD,D_TURBO],oProd:'$127.500',nProd:'$118.450',tip:'$2.000',total:'$124.450',save:'$19.050'}),
+  'checkout-n':()=>checkout({deliveries:[D_MCD,D_TURBO,D_MARKET],oProd:'$155.900',nProd:'$146.850',tip:'$3.000',total:'$153.850',save:'$24.050'}),
+  'pago-reglas':()=>checkout({deliveries:[D_MCD,D_TURBO],oProd:'$127.500',nProd:'$118.450',tip:'$2.000',total:'$124.450',save:'$19.050',payWarning:true}),
+  'creando':()=>`<div class="fade state"><div class="sclose">✕</div><div class="center"><div class="pulse"><span class="ring"></span><span class="ring"></span><span class="ring"></span><div class="core">${S.cart}</div></div><h2>Estamos creando<br>tu pedido</h2><div class="ssub">Recibirás 2 entregas</div><div class="pillrow"><span class="ipill">🏬 2 tiendas</span><span class="ipill">🛍️ 7 productos</span></div><div class="mini-cards"><div class="mcard"><span class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" stroke-width="1.8"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div class="mt"><div class="a">Mi Casa</div><div class="b">Carrera 11 #82-01</div></div></div><div class="mcard"><span class="visa"><span>VISA</span></span><div class="mt"><div class="a">Crédito *2122</div><div class="b">2 cobros · uno por entrega</div></div></div></div></div><div class="state-foot"><button class="btn-ghost">Deshacer pedido</button></div></div>`,
+  'confirmando':()=>`<div class="fade state"><div class="sclose">✕</div><div class="center"><div class="spin"></div><h2 style="margin-top:26px;">Confirmando<br>tus pagos</h2><div class="ssub">Estamos validando tus pagos. Pronto será confirmado por tu banco.</div><div class="mini-cards"><div class="mcard"><span class="logo mcd" style="width:34px;height:34px">${S.mcd}</span><div class="mt"><div class="a">McDonald's Turbo</div><div class="b">Cobro 1</div></div><span class="amt">$90.850</span><span class="minispin"></span></div><div class="mcard"><span class="logo turbo" style="width:34px;height:34px">${S.turbo}</span><div class="mt"><div class="a">Turbo</div><div class="b">Cobro 2</div></div><span class="amt">$31.600</span><span class="minispin"></span></div><div class="mcard"><span class="visa"><span>VISA</span></span><div class="mt"><div class="a">Método de pago</div><div class="b">*2122</div></div></div></div><div class="note-strip">💡 Se te cobra por separado: una transacción por tienda. El banco notifica cada cargo individualmente.</div></div><div class="state-foot"><button class="btn-solid">Continuar</button></div></div>`,
+  'exito':()=>`<div class="fade state"><div class="sclose">✕</div><div class="center"><div class="big-icon ok"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#00B37E" stroke-width="2.4"><path d="M4 12l5 5L20 6"/></svg></div><h2>¡Pedido<br>confirmado!</h2><div class="ssub">Recibirás 2 entregas, cada una con su propio seguimiento y tiempo de llegada.</div><div class="mini-cards"><div class="mcard"><span class="logo mcd" style="width:34px;height:34px">${S.mcd}</span><div class="mt"><div class="a">McDonald's Turbo</div><div class="b">Llega en 12 - 15 min</div></div><span class="st-dot ok"></span></div><div class="mcard"><span class="logo turbo" style="width:34px;height:34px">${S.turbo}</span><div class="mt"><div class="a">Turbo</div><div class="b">Llega en 8 - 10 min</div></div><span class="st-dot ok"></span></div></div></div><div class="state-foot"><button class="btn-solid">Ver seguimiento</button></div></div>`,
+  'sin-fondos':()=>`<div class="fade state"><div class="sclose">‹</div><div class="center"><div class="big-icon err"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#E23744" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="13"/><circle cx="12" cy="17" r="0.8" fill="#E23744"/></svg></div><h2>No pudimos<br>crear tus órdenes</h2><div class="ssub">No tienes fondos suficientes para pagar tus 2 entregas. Como falló el primer cobro, no se creó ninguna orden.</div><div class="note-strip">💡 Regla: si falla la <b>primera</b> orden, fallan las dos. No dejamos órdenes a medias.</div></div><div class="state-foot"><button class="btn-solid">Cambiar método de pago</button><button class="btn-ghost">Volver al carrito</button></div></div>`,
+  'remedy-segunda':()=>`<div class="fade state"><div class="sclose">‹</div><div class="center" style="justify-content:flex-start;padding-top:40px;"><div class="big-icon err" style="width:72px;height:72px;margin-bottom:18px;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#E23744" stroke-width="2.2"><path d="M12 2 1 21h22z"/><line x1="12" y1="9" x2="12" y2="15"/><circle cx="12" cy="18" r="0.8" fill="#E23744"/></svg></div><h2 style="font-size:21px">Falló el cobro de<br>tu segunda orden</h2><div class="ssub">Tu primera orden quedó <b>en espera (on hold)</b> mientras resuelves el pago de la segunda.</div><div class="mini-cards"><div class="mcard"><span class="logo mcd" style="width:34px;height:34px">${S.mcd}</span><div class="mt"><div class="a">McDonald's Turbo</div><div class="b">Cobro 1 · On hold</div></div><span class="st-dot pend"></span></div><div class="mcard" style="border-color:#F7D4D7;background:#FFF8F8;"><span class="logo turbo" style="width:34px;height:34px">${S.turbo}</span><div class="mt"><div class="a">Turbo</div><div class="b" style="color:#E23744">Cobro 2 · Falló $31.600</div></div><span class="st-dot err"></span></div></div></div><div class="state-foot"><button class="btn-solid">Agregar nuevo método para la 2ª orden</button><button class="btn-danger">Cancelar todo</button></div></div>`,
+  'remedy-cancelar':()=>`<div class="fade state"><div class="sclose">‹</div><div class="center" style="justify-content:flex-start;padding-top:40px;"><div class="big-icon err" style="width:72px;height:72px;margin-bottom:18px;background:#F3F4F6;"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="8" y1="8" x2="16" y2="16"/><line x1="16" y1="8" x2="8" y2="16"/></svg></div><h2 style="font-size:21px">Cancelamos<br>tu pedido</h2><div class="ssub">Te devolveremos <b>$90.850</b> del cobro de tu primera orden. Elige dónde quieres recibirlo.</div><div class="mini-cards"><button class="opt"><span class="oi"><span class="visa"><span>VISA</span></span></span><div class="ot"><div class="a">Método original</div><div class="b">Crédito *2122 · 3-5 días hábiles</div></div><span class="chev">›</span></button><button class="opt"><span class="oi">💚</span><div class="ot"><div class="a">Créditos Rappi</div><div class="b">Inmediato · úsalo en tu próximo pedido</div></div><span class="chev">›</span></button></div><div class="note-strip">💡 La devolución va por el <b>flujo regular</b>: el usuario escoge dónde recibir el dinero.</div></div><div class="state-foot"><button class="btn-solid">Volver al inicio</button></div></div>`,
+
+  'exito-bnpl':()=>`<div class="fade state"><div class="sclose">✕</div><div class="center"><div class="big-icon ok"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#00B37E" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h2>¡Órdenes creadas!<br>Pagas al recibir</h2><div class="ssub">Con BNPL creamos tus 2 órdenes ahora y cobramos cuando se entregue cada una.</div><div class="mini-cards"><div class="mcard"><span class="logo mcd" style="width:34px;height:34px">${S.mcd}</span><div class="mt"><div class="a">McDonald's Turbo</div><div class="b">Cobro al entregar · $90.850</div></div><span class="st-dot pend"></span></div><div class="mcard"><span class="logo turbo" style="width:34px;height:34px">${S.turbo}</span><div class="mt"><div class="a">Turbo</div><div class="b">Cobro al entregar · $31.600</div></div><span class="st-dot pend"></span></div></div><div class="note-strip">💡 Si tienes deuda, puedes pagar múltiples órdenes en deuda.</div></div><div class="state-foot"><button class="btn-solid">Ver seguimiento</button></div></div>`,
+
+  'rechazo-fraude':()=>`<div class="fade state"><div class="proposal">PROPUESTA UI</div><div class="sclose">‹</div><div class="center"><div class="big-icon err"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#E23744" stroke-width="2"><path d="M12 2 4 5v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V5z"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16" r="0.8" fill="#E23744"/></svg></div><h2>No pudimos<br>procesar tu pago</h2><div class="ssub">Por seguridad no pudimos validar esta transacción. No se creó ninguna orden y no se te cobró.</div><div class="mini-cards"><div class="mcard"><span class="logo" style="width:34px;height:34px;background:#FDEBEC;font-size:16px">🛡️</span><div class="mt"><div class="a">Verificación de seguridad</div><div class="b">Rappi o tu banco rechazó el pago</div></div></div></div><div class="note-strip">💡 Mensaje genérico por seguridad: no se muestra el motivo exacto del rechazo.</div></div><div class="state-foot"><button class="btn-solid">Usar otro método de pago</button><button class="btn-ghost">Ir a soporte</button></div></div>`,
+
+  'remedy-fraude':()=>`<div class="fade state"><div class="proposal">PROPUESTA UI</div><div class="sclose">‹</div><div class="center" style="justify-content:flex-start;padding-top:34px;"><div class="big-icon err" style="width:70px;height:70px;margin-bottom:16px;"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#E23744" stroke-width="2"><path d="M12 2 4 5v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V5z"/><path d="M9 12l2 2 4-4"/></svg></div><h2 style="font-size:21px">Verifiquemos<br>que eres tú</h2><div class="ssub">Para proteger tu pago pedimos verificación <b>solo en la orden de mayor valor</b>.</div><div class="mini-cards"><div class="mcard" style="border-color:#F7D4D7;background:#FFF8F8;"><span class="logo mcd" style="width:34px;height:34px">${S.mcd}</span><div class="mt"><div class="a">McDonald's · mayor valor</div><div class="b" style="color:#E23744">Requiere verificación · $90.850</div></div><span class="st-dot pend"></span></div><div class="mcard"><span class="logo turbo" style="width:34px;height:34px">${S.turbo}</span><div class="mt"><div class="a">Turbo</div><div class="b">Sin verificación · $31.600</div></div><span class="st-dot ok"></span></div></div><div class="codebox"><span class="filled">4</span><span class="filled">8</span><span>·</span><span>·</span><span>·</span><span>·</span></div><div class="note-strip">💡 El challenge se aplica solo en la orden de mayor valor, nunca en ambas.</div></div><div class="state-foot"><button class="btn-solid">Verificar</button><button class="btn-danger">Cancelar pedido</button></div></div>`,
+
+  'comunicaciones':()=>`<div class="fade state"><div class="proposal">PROPUESTA UI</div><div class="sclose">✕</div><div class="center"><div class="big-icon ok" style="background:#E8F0FE;"><span style="font-size:40px">🔔</span></div><h2>Te avisamos<br>por cada cobro</h2><div class="ssub">Cada tienda es una transacción independiente: recibirás una notificación del banco por cada cobro.</div><div class="mini-cards"><div class="mcard"><span class="logo" style="width:34px;height:34px;background:#E8F0FE;font-size:15px">🔔</span><div class="mt"><div class="a">Cobro 1 · McDonald's</div><div class="b">$90.850 · notificación del banco</div></div><span class="st-dot ok"></span></div><div class="mcard"><span class="logo" style="width:34px;height:34px;background:#E8F0FE;font-size:15px">🔔</span><div class="mt"><div class="a">Cobro 2 · Turbo</div><div class="b">$31.600 · notificación del banco</div></div><span class="st-dot ok"></span></div><div class="mcard"><span class="logo" style="width:34px;height:34px;background:#E4F8F0;font-size:15px">💚</span><div class="mt"><div class="a">Devolución</div><div class="b">Por flujo regular · tú eliges dónde recibir</div></div></div></div><div class="note-strip">💡 El banco envía una comunicación por transacción. Las devoluciones siguen el flujo estándar.</div></div><div class="state-foot"><button class="btn-ghost">Entendido</button></div></div>`,
+};
+
+/* ===== metadata por pantalla ===== */
+const META={
+  'checkout-base':{title:'Checkout · Terminar y pagar',accent:'#00B37E',
+    lead:'El usuario revisa un pedido de 2 tiendas y paga una sola vez. Cada tienda es una entrega independiente.',
+    goes:'Tap "Continuar" → crea N órdenes (group_order_id) → "Estamos creando tu pedido"',
+    annos:[
+      {sel:'.topbar h1',title:'Un solo checkout',text:'Checkout multi-orden: paga varias tiendas del mismo pedido en un solo flujo.'},
+      {sel:'.info-line',title:'1 método · N cobros',text:'Regla central: un método de pago, pero un cobro por cada entrega (incluye cargos).'},
+      {sel:'.deliv-card',nth:0,title:'Entrega 1 · McDonald\'s',text:'Tienda 1 con su propio ETA ("Más rápido" 12-15 min), propina y subtotal ($91.850).'},
+      {sel:'.deliv-card',nth:1,title:'Entrega 2 · Turbo',text:'Tienda 2 con su ETA (8-10 min), propina y subtotal ($32.600) independientes.'},
+      {sel:'.sum-row.total',title:'Total consolidado',text:'Suma productos, envíos, servicio y propinas de todas las tiendas en un total único.'},
+      {sel:'.continuar',title:'Continuar',text:'Dispara la creación de las N órdenes bajo un group_order_id.'},
+    ],
+    q:['¿Créditos/cupones arriba (global) o en la sección de cada orden?','Banner de oferta por tienda: si no aplica a ambos store IDs, no se muestra (V1).']},
+  'checkout-n':{title:'Checkout · 3 tiendas',accent:'#00B37E',
+    lead:'El mismo checkout escala a 3 entregas. El límite de 2 era de negocio; tech soporta N tiendas.',
+    goes:'Tap "Continuar" → crea 3 órdenes bajo el mismo group_order_id',
+    annos:[
+      {sel:'.info-line',title:'3 cobros',text:'Con 3 tiendas se hacen 3 cobros, uno por entrega.'},
+      {sel:'.deliv-card',nth:2,title:'Tercera tienda',text:'Market Turbo se suma como una entrega más, con su ETA y subtotal.'},
+      {sel:'.sum-row.total',title:'Total único',text:'Un solo total consolidado para las 3 entregas.'},
+      {sel:'.continuar',title:'Continuar',text:'Antes de abrir a >2 tiendas se necesita el "cerebro" de distribución en canasta.'},
+    ],
+    q:['¿Tope visual de entregas? ¿scroll o agrupación?','Challenge de fraude solo en la orden de mayor valor.']},
+  'pago-reglas':{title:'Regla de método de pago',accent:'#E8A838',
+    lead:'Un método solo aplica si está disponible para TODAS las tiendas. Solo métodos enrolables; PSE y Apple Pay quedan fuera.',
+    goes:'Elegir método válido para las 2 tiendas → se desbloquea "Continuar"',
+    annos:[
+      {sel:'.warn-card',title:'Método no válido',text:'Efectivo no cubre Turbo → el método debe servir para todas las tiendas.'},
+      {sel:'.method',nth:1,title:'Efectivo bloqueado',text:'Se muestra pero deshabilitado, con el motivo del bloqueo.'},
+      {sel:'.method',nth:2,title:'PSE excluido',text:'Solo métodos enrolables (tarjetas, Nequi, botón Bancolombia). PSE/Apple Pay fuera.'},
+      {sel:'.continuar',title:'Continuar bloqueado',text:'No avanza hasta elegir un método válido para las 2 tiendas.'},
+    ],
+    q:['Si el método es por tienda, ¿se muestra por orden o arriba indicando a cuál aplica?','Cobertura: CO 98% · MX 92% · AR 99%.']},
+  'creando':{title:'Estamos creando tu pedido',accent:'#4D8DF5',
+    lead:'Estado de transición. El checkout llama a fraude (con group_order_id) y crea las N órdenes bajo un mismo grupo.',
+    goes:'Fraude OK → "Confirmando tus pagos" · Rechazo/fraude en 1ª → error',
+    annos:[
+      {sel:'.pulse',title:'Creando órdenes',text:'Mientras se crean las N órdenes. Checkout llama a fraude en este primer momento.'},
+      {sel:'.pillrow',title:'Resumen',text:'2 tiendas · 7 productos: lo que el usuario está por recibir.'},
+      {sel:'.mcard',nth:1,title:'2 cobros',text:'Se anticipa: un cobro por entrega al mismo método de pago.'},
+      {sel:'.btn-ghost',title:'Deshacer',text:'Permite abortar antes de que se confirmen los cobros.'},
+    ],
+    q:['¿El remedy de fraude usa el group_order_id?','Fraud challenges atados a tarjetas: ¿cuáles pegan aquí?']},
+  'confirmando':{title:'Confirmando tus pagos',accent:'#4D8DF5',
+    lead:'Se ejecutan los cobros, uno por tienda. Cada transacción es independiente; el banco notifica cada cargo por separado.',
+    goes:'Todos OK → "Pedido confirmado" · Falla 1er cobro → rollback · Falla 2º+ → remedy',
+    annos:[
+      {sel:'.spin',title:'Validando pagos',text:'Se ejecutan los cobros uno por tienda; se espera confirmación del banco.'},
+      {sel:'.mcard',nth:0,title:'Cobro 1 · McDonald\'s',text:'Primer cargo $90.850 a la tarjeta *2122.'},
+      {sel:'.mcard',nth:1,title:'Cobro 2 · Turbo',text:'Segundo cargo $31.600. Transacciones independientes.'},
+      {sel:'.note-strip',title:'Cobro por separado',text:'Mensaje clave: se cobra por separado; el banco envía una notificación por transacción.'},
+    ],
+    q:['BNPL: hoy no se puede dar para >1 orden activa — ¿en las 2 o en ninguna? Tiene tope.','¿Pre-cobro o cobro al entregar con BNPL?']},
+  'exito':{title:'Pedido confirmado',accent:'#00B37E',
+    lead:'Las N órdenes se crearon y cobraron. Cada entrega sigue su propio tracking y ETA (un pago, varias entregas).',
+    goes:'Fin del happy path → "Ver seguimiento" (order tracking por entrega)',
+    annos:[
+      {sel:'.big-icon',title:'Confirmado',text:'Todas las órdenes se crearon y cobraron con éxito.'},
+      {sel:'.mcard',nth:0,title:'Entrega 1',text:'McDonald\'s llega en 12-15 min, con su propio seguimiento.'},
+      {sel:'.mcard',nth:1,title:'Entrega 2',text:'Turbo llega en 8-10 min. Estilo Amazon: un pago, varias entregas.'},
+    ],
+    q:['On Top V1 muestra una tienda pero debe saber que salieron N órdenes juntas (group_order_id).']},
+  'sin-fondos':{title:'No pudimos crear tus órdenes',accent:'#E23744',
+    lead:'El primer cobro falla por fondos. Regla: si falla la primera orden, fallan todas — no quedan órdenes a medias.',
+    goes:'"Cambiar método" → regla de pago · "Volver al carrito" → checkout',
+    annos:[
+      {sel:'.big-icon',title:'Sin órdenes',text:'Falló el primer cobro por falta de fondos.'},
+      {sel:'.note-strip',title:'Rollback total',text:'Si falla la 1ª orden, fallan todas. No se crean órdenes parciales.'},
+      {sel:'.btn-solid',title:'Cambiar método',text:'Lleva a reglas de método de pago para reintentar.'},
+    ],
+    q:['¿Cómo comunicamos el fallo por fraude (con y sin BNPL)?']},
+  'remedy-segunda':{title:'Falló el cobro de la 2ª orden',accent:'#E23744',
+    lead:'La 1ª orden salió bien pero falla la 2ª. Las órdenes previas quedan on-hold mientras el usuario resuelve.',
+    goes:'"Nuevo método" → reintenta la 2ª · "Cancelar todo" → devolución',
+    annos:[
+      {sel:'.mcard',nth:0,title:'Orden 1 · On hold',text:'La primera orden ya se cobró y queda en espera mientras se resuelve la segunda.'},
+      {sel:'.mcard',nth:1,title:'Orden 2 · Falló',text:'El cobro de la segunda tienda falló ($31.600).'},
+      {sel:'.btn-solid',title:'Nuevo método (2ª)',text:'Reintenta solo la orden fallida con otro método de pago.'},
+      {sel:'.btn-danger',title:'Cancelar todo',text:'Cancela también la orden on-hold → flujo de devolución.'},
+    ],
+    q:['¿Las previas quedan "on hold"? ¿Cómo comunicamos?','No challenge de fraude en ambas (solo en la de mayor valor).']},
+  'remedy-cancelar':{title:'Cancelamos tu pedido',accent:'#E23744',
+    lead:'Si el usuario cancela todo, se cancelan las órdenes creadas y se devuelve lo cobrado por el flujo regular.',
+    goes:'Elegir destino de la devolución → fin',
+    annos:[
+      {sel:'.ssub',title:'Monto a devolver',text:'Se devuelve lo ya cobrado de la primera orden ($90.850).'},
+      {sel:'.opt',nth:0,title:'Método original',text:'Devolución a la tarjeta en 3-5 días hábiles.'},
+      {sel:'.opt',nth:1,title:'Créditos Rappi',text:'Inmediato, para usar en el próximo pedido.'},
+      {sel:'.note-strip',title:'Flujo regular',text:'La devolución sigue el flujo estándar: el usuario elige dónde recibir.'},
+    ],
+    q:['Validar que el flujo de fraude siga funcionando tras cancelar.']},
+  'exito-bnpl':{title:'Con BNPL · órdenes creadas',accent:'#00B37E',
+    lead:'Con BNPL las 2 órdenes se crean ahora y el cobro se hace al entregar cada una. Si hay deuda, se pueden tener varias órdenes en deuda.',
+    goes:'Órdenes creadas → cobro diferido al entregar cada entrega',
+    annos:[
+      {sel:'.big-icon',title:'Creadas sin cobro ahora',text:'Con BNPL se crean las 2 órdenes de inmediato, sin cobrar en el momento.'},
+      {sel:'.mcard',nth:0,title:'Cobro al entregar',text:'El Cobro 1 se ejecuta cuando se entrega la orden de McDonald\'s.'},
+      {sel:'.note-strip',title:'Deuda múltiple',text:'El usuario puede tener varias órdenes en deuda a la vez.'},
+    ],
+    q:['BNPL no se puede dar para >1 orden activa: ¿presto en las 2 o en ninguna?','Tiene tope de monto. ¿Pre-cobro o cobro al entregar?']},
+  'rechazo-fraude':{title:'Rechazo por fraude',accent:'#E23744',
+    lead:'Las órdenes fallan por fraude del usuario (aplica con o sin BNPL). No se crea ninguna orden y no se cobra. El copy está abierto en el board.',
+    goes:'"Otro método" → reintenta · "Soporte" → ayuda',
+    annos:[
+      {sel:'.big-icon',title:'Rechazo por fraude',text:'Mismo caso para BNPL y sin BNPL: la evaluación de fraude rechaza el pago.'},
+      {sel:'.mcard',nth:0,title:'Mensaje genérico',text:'Por seguridad no se da el motivo exacto del rechazo.'},
+      {sel:'.btn-solid',title:'Reintentar',text:'CTA propuesto: usar otro método de pago o ir a soporte.'},
+    ],
+    q:['¿Cómo comunicamos exactamente? (abierto en el board)','¿Mismo copy para BNPL y sin BNPL?']},
+  'remedy-fraude':{title:'Remedy en fraude',accent:'#E23744',
+    lead:'Cuando fraude pide verificación, el challenge se aplica solo en la orden de mayor valor, nunca en ambas. Puede implicar crear una orden nueva (revisar con Core).',
+    goes:'Verificación OK → continúa el cobro · Falla → rechazo por fraude',
+    annos:[
+      {sel:'.mcard',nth:0,title:'Challenge · mayor valor',text:'La verificación se pide solo en la orden de mayor valor ($90.850).'},
+      {sel:'.mcard',nth:1,title:'Sin challenge',text:'La otra orden no pide verificación, para no duplicar fricción.'},
+      {sel:'.codebox',title:'Doble código',text:'Verificación tipo doble código (propuesta). Revisar edge cases.'},
+      {sel:'.note-strip',title:'Nunca en ambas',text:'Evitamos challenge en las dos órdenes a la vez.'},
+    ],
+    q:['Puede crearse otra orden nueva: revisar lógica con Core (Marcos / Luis Felipe).','¿Cómo afecta/funciona con las franquicias?','Ver flujos de remedy (doble código) y edge cases.']},
+  'comunicaciones':{title:'Comunicaciones y devolución',accent:'#4D8DF5',
+    lead:'Cada tienda es una transacción independiente, así que el banco envía una notificación por cada cobro. Las devoluciones van por el flujo regular.',
+    goes:'Informativo · el usuario elige dónde recibir una devolución',
+    annos:[
+      {sel:'.mcard',nth:0,title:'1 cobro = 1 aviso',text:'El banco manda una comunicación por cada transacción/cobro.'},
+      {sel:'.mcard',nth:2,title:'Devolución',text:'Va por el flujo regular: el usuario escoge dónde recibir el dinero.'},
+      {sel:'.note-strip',title:'Consistencia',text:'Comunicación por transacción; devolución estándar.'},
+    ],
+    q:['¿Cómo funcionarían exactamente las comms? (abierto)','Comms del remedy de fraude (doble código).']},
+};
+
+/* ===== flujos (secuencias de pantallas) ===== */
+const FLOWS=[
+  {id:'happy',name:'Happy path',sub:'2 entregas · 2 cobros',color:'#00B37E',steps:['checkout-base','creando','confirmando','exito']},
+  {id:'nflow',name:'N tiendas',sub:'3 entregas',color:'#00B37E',steps:['checkout-n','creando','confirmando','exito']},
+  {id:'reglas',name:'Regla de método de pago',sub:'método no válido',color:'#E8A838',steps:['pago-reglas']},
+  {id:'sinfondos',name:'Sin fondos',sub:'rollback total',color:'#E23744',steps:['checkout-base','creando','confirmando','sin-fondos']},
+  {id:'remedy',name:'Remedy · falla 2ª orden',sub:'on-hold / devolución',color:'#E23744',steps:['confirmando','remedy-segunda','remedy-cancelar']},
+  {id:'bnpl-ok',name:'Con BNPL · éxito',sub:'cobro al entregar',color:'#00B37E',steps:['checkout-base','creando','exito-bnpl']},
+  {id:'fraude',name:'Rechazo por fraude',sub:'con / sin BNPL',color:'#E23744',steps:['creando','rechazo-fraude']},
+  {id:'remedy-fraude-flow',name:'Remedy en fraude',sub:'challenge mayor valor',color:'#E23744',steps:['confirmando','remedy-fraude']},
+  {id:'comms',name:'Comunicaciones',sub:'cobros y devolución',color:'#4D8DF5',steps:['comunicaciones']},
+];
+
+/* ===== estado + render ===== */
+const screenEl=document.getElementById('screen');
+const pinsEl=document.getElementById('pins');
+const docsEl=document.getElementById('docs');
+const flowsEl=document.getElementById('flows');
+let fIdx=0, sIdx=0, repositionFn=null;
+
+function buildFlows(){
+  flowsEl.innerHTML=FLOWS.map((f,fi)=>`<div class="flow ${fi===0?'':'collapsed'}" data-f="${fi}">
+    <div class="flow-h"><div class="fn"><span class="d" style="background:${f.color}"></span>${f.name}</div><div class="fs">${f.sub}</div></div>
+    <div class="steps">${f.steps.map((s,si)=>`<div class="step" data-f="${fi}" data-s="${si}"><span class="sn">${si+1}</span>${META[s].title}</div>`).join('')}</div></div>`).join('');
+  flowsEl.querySelectorAll('.flow-h').forEach(h=>h.onclick=()=>h.parentElement.classList.toggle('collapsed'));
+  flowsEl.querySelectorAll('.step').forEach(st=>st.onclick=()=>{go(+st.dataset.f,+st.dataset.s);});
+}
+
+function go(fi,si){
+  fIdx=fi; sIdx=si;
+  const flow=FLOWS[fi]; const id=flow.steps[si]; const m=META[id];
+  document.documentElement.style.setProperty('--accent',m.accent);
+  // render screen
+  screenEl.innerHTML=SCREENS[id]();
+  screenEl.scrollTop=0;
+  // CTAs advance the stepper
+  screenEl.querySelectorAll('.continuar:not([disabled]),.btn-solid,.btn-ghost,.btn-danger,.opt').forEach(b=>b.style.cursor='pointer');
+  screenEl.querySelectorAll('.continuar:not([disabled]),.btn-solid').forEach(b=>b.onclick=nextStep);
+  // stepper bar
+  document.getElementById('sp').textContent=`PASO ${si+1} DE ${flow.steps.length}`;
+  document.getElementById('st').textContent=m.title;
+  document.getElementById('dots').innerHTML=flow.steps.map((_,i)=>`<i class="${i===si?'on':''}"></i>`).join('');
+  document.getElementById('prev').disabled=si===0;
+  document.getElementById('next').disabled=si===flow.steps.length-1;
+  // sidebar highlight + expand
+  flowsEl.querySelectorAll('.flow').forEach((el,i)=>el.classList.toggle('collapsed',i!==fi));
+  flowsEl.querySelectorAll('.step').forEach(st=>st.classList.toggle('active',+st.dataset.f===fi&&+st.dataset.s===si));
+  // docs + pins
+  renderDocs(id,flow); layoutPins(id);
+}
+function nextStep(){const flow=FLOWS[fIdx];if(sIdx<flow.steps.length-1)go(fIdx,sIdx+1);}
+function prevStep(){if(sIdx>0)go(fIdx,sIdx-1);}
+document.getElementById('next').onclick=nextStep;
+document.getElementById('prev').onclick=prevStep;
+
+function renderDocs(id,flow){
+  const m=META[id];
+  docsEl.innerHTML=`<div class="crumb"><span class="d"></span>${flow.name} · Paso ${sIdx+1}/${flow.steps.length}</div>
+    <h2>${m.title}</h2><p class="lead">${m.lead}</p>
+    <div class="legend">${m.annos.map((a,i)=>`<div class="lg" data-i="${i}"><span class="n">${i+1}</span><div><div class="lt">${a.title}</div><div class="lx">${a.text}</div></div></div>`).join('')}</div>
+    <div class="goes"><div class="gl">A dónde va</div><div class="gt">${m.goes}</div></div>
+    ${m.q&&m.q.length?`<div class="qbox"><h4>Preguntas abiertas</h4><ul>${m.q.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}`;
+  docsEl.querySelectorAll('.lg').forEach(lg=>{
+    lg.onmouseenter=()=>flashPin(+lg.dataset.i,true);
+    lg.onmouseleave=()=>flashPin(+lg.dataset.i,false);
+    lg.onclick=()=>scrollToAnno(+lg.dataset.i);
+  });
+}
+
+/* ===== pins ===== */
+let currentAnnos=[];
+function layoutPins(id){
+  const m=META[id]; currentAnnos=m.annos;
+  pinsEl.innerHTML=m.annos.map((a,i)=>`<div class="pin-no" data-i="${i}">${i+1}</div>`).join('');
+  pinsEl.querySelectorAll('.pin-no').forEach(p=>{
+    p.onmouseenter=()=>flashLg(+p.dataset.i,true); p.onmouseleave=()=>flashLg(+p.dataset.i,false);
+    p.onclick=()=>scrollToAnno(+p.dataset.i);
+  });
+  if(repositionFn) screenEl.removeEventListener('scroll',repositionFn);
+  repositionFn=()=>positionPins();
+  screenEl.addEventListener('scroll',repositionFn);
+  requestAnimationFrame(()=>{positionPins();setTimeout(positionPins,120);});
+}
+function annoEl(a){const els=screenEl.querySelectorAll(a.sel);return els[a.nth||0];}
+function positionPins(){
+  const pr=screenEl.getBoundingClientRect();
+  currentAnnos.forEach((a,i)=>{
+    const pin=pinsEl.querySelector(`.pin-no[data-i="${i}"]`); if(!pin)return;
+    const el=annoEl(a); if(!el){pin.style.display='none';return;}
+    const r=el.getBoundingClientRect();
+    const cx=r.left-pr.left + r.width-14;
+    const cy=r.top-pr.top + r.height/2;
+    if(cy<16||cy>pr.height-6){pin.style.display='none';return;}
+    pin.style.display='flex'; pin.style.left=cx+'px'; pin.style.top=cy+'px';
+  });
+}
+function scrollToAnno(i){const el=annoEl(currentAnnos[i]); if(!el)return; el.scrollIntoView({block:'center',behavior:'smooth'}); setTimeout(positionPins,350); flashPin(i,true); setTimeout(()=>flashPin(i,false),1200);}
+function flashPin(i,on){const p=pinsEl.querySelector(`.pin-no[data-i="${i}"]`); if(p)p.classList.toggle('hot',on);}
+function flashLg(i,on){const l=docsEl.querySelector(`.lg[data-i="${i}"]`); if(l)l.style.borderColor=on?'var(--accent)':'';}
+
+buildFlows();
+go(0,0);
+</script>
+</body>
+</html>

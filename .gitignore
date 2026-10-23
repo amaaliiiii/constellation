@@ -1,0 +1,7 @@
+# Internal planning docs (no subir)
+recap-constellation-preorder.md
+*.pdf
+
+# OS / editor
+.DS_Store
+Thumbs.db
