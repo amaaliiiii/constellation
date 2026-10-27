@@ -429,7 +429,7 @@ function commIcon(store,type){if(type==='bank')return'🏦';if(store===T1)return
 const SCEN={
  A:{flow:'bnpl',letter:'A',name:'Ambas órdenes se crean',result:[['ok'],['ok']],pending:false,steps:['checkout-base','creando','exito-bnpl'],
    orders:[{store:T1,st:'ok',badge:'Creada',line:'Pago al entregar (BNPL)'},{store:T2,st:'ok',badge:'Creada',line:'Pago al entregar (BNPL)'}],
-   system:['BNPL: no se cobra al crear las órdenes','Se crean las 2 órdenes bajo un group_order_id','El cobro ocurrirá al momento de la entrega'],
+   system:['BNPL: no se cobra al crear las órdenes','Se crean las 2 órdenes bajo un group_order_id; cada orden tiene su propio order_id','El cobro ocurrirá al momento de la entrega'],
    screen:{icon:'ok',title:'¡Tus pedidos están confirmados!',text:'Creamos tus 2 pedidos. Recibirás una entrega por cada tienda.'},
    comms:[{store:T1,type:'ok',text:'¡Tu pedido de McDonald\'s Turbo está confirmado!'},{store:T2,type:'ok',text:'¡Tu pedido de Turbo está confirmado!'}],
    actions:[]},
@@ -657,8 +657,8 @@ const SCREENS={
 };
 /* nota técnica por paso */
 const STEP_META={
-  'checkout-base':{t:'Checkout · Terminar y pagar',n:'El usuario revisa un pedido de 2 tiendas y paga una sola vez. Un método para todas, un cobro por entrega.',g:'Tap "Continuar" → se crean las N órdenes bajo un group_order_id.'},
-  'creando':{t:'Creando tu pedido',n:'Estado de transición: se crean las N órdenes bajo un mismo grupo y se corre la validación de riesgo una sola vez.',g:'Riesgo OK → cobro (sin BNPL) o creación (BNPL). Rechazo → mensaje de seguridad.'},
+  'checkout-base':{t:'Checkout · Terminar y pagar',n:'El usuario revisa un pedido de 2 tiendas y paga una sola vez. Un método para todas, un cobro por entrega.',g:'Tap "Continuar" → se crean las N órdenes bajo un group_order_id (cada una con su propio order_id).'},
+  'creando':{t:'Creando tu pedido',n:'Estado de transición: se crean las N órdenes bajo un mismo group_order_id (cada orden con su propio order_id) y se corre la validación de riesgo una sola vez.',g:'Riesgo OK → cobro (sin BNPL) o creación (BNPL). Rechazo → mensaje de seguridad.'},
   'confirmando':{t:'Confirmando tus pagos',n:'Se ejecuta un cobro por tienda. Cada transacción es independiente; el banco notifica cada cargo por separado.',g:'Todos OK → confirmado · Falla el 1º → rollback · Falla el 2º → decisión del usuario.'},
   'exito':{t:'Pedido confirmado',n:'Las 2 órdenes se crearon y cobraron. Cada entrega sigue su propio tracking y ETA (un pago, varias entregas).',g:'Fin del flujo feliz → "Ver seguimiento".'},
   'exito-bnpl':{t:'BNPL · pedidos creados',n:'Con BNPL las 2 órdenes se crean ahora y el cobro ocurre al entregar cada una. No hay cobro en el checkout.',g:'Fin del flujo BNPL → cobro diferido al entregar.'},
