@@ -212,6 +212,12 @@
   .cond-legend{display:flex;gap:16px;margin:16px 0 20px;flex-wrap:wrap;}
   .cond-legend span{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--txt-soft);}
   .conds{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .cond-group{margin-bottom:26px;}
+  .cond-group .cgt{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:14px;}
+  .cgt .cgd{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .cgt .cgd.def{background:var(--green);}
+  .cgt .cgd.prop{background:var(--amber);}
+  .cgt .cgc{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--txt-dim);background:var(--panel-2);border:1px solid var(--side-line);border-radius:20px;padding:2px 9px;}
   .cond{display:flex;gap:13px;background:var(--panel);border:1px solid var(--side-line);border-radius:14px;padding:15px 16px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
   .cond.prop{border-left:3px solid var(--amber);}
   .cond.def{border-left:3px solid var(--green);}
@@ -368,7 +374,7 @@
         <span><span class="tag prop">PENDIENTE DE VALIDAR</span> Propuesta, requiere alineación</span>
         <span><span class="tag ui">IMPACTA UI</span> Requiere un cambio en la interfaz</span>
       </div>
-      <div class="conds" id="conds"></div>
+      <div id="conds"></div>
     </section>
 
     <!-- SECTION 2 -->
@@ -417,8 +423,19 @@ const COND=[
   {t:"Si el usuario cancela una orden ya cobrada o autorizada, entra al flujo de <b>reversión o devolución</b>. El comportamiento exacto queda pendiente con Payments.",def:false},
   {t:"Para <b>BNPL</b>, se habilita la creación de múltiples órdenes; el cobro ocurre al momento de la entrega. Validar cómo se gestiona el pago de <b>múltiples deudas pendientes</b>.",def:false},
 ];
+function condCard(c,i){return `<div class="cond ${c.def?'def':'prop'} ${c.ui?'uicond':''}"><span class="cnum">${i+1}</span><div class="cbody"><div class="ct">${c.t}</div><div class="ctags"><span class="tag ${c.def?'def':'prop'}">${c.def?'DEFINIDA':'PENDIENTE DE VALIDAR'}</span>${c.ui?'<span class="tag ui">IMPACTA UI</span>':''}</div></div></div>`;}
 function renderCond(){
-  document.getElementById('conds').innerHTML=COND.map((c,i)=>`<div class="cond ${c.def?'def':'prop'} ${c.ui?'uicond':''}"><span class="cnum">${i+1}</span><div class="cbody"><div class="ct">${c.t}</div><div class="ctags"><span class="tag ${c.def?'def':'prop'}">${c.def?'DEFINIDA':'PENDIENTE DE VALIDAR'}</span>${c.ui?'<span class="tag ui">IMPACTA UI</span>':''}</div></div></div>`).join('');
+  const def=COND.map((c,i)=>({c,i})).filter(x=>x.c.def);
+  const prop=COND.map((c,i)=>({c,i})).filter(x=>!x.c.def);
+  document.getElementById('conds').innerHTML=`
+    <div class="cond-group">
+      <div class="cgt"><span class="cgd def"></span>Cerradas · definidas<span class="cgc">${def.length}</span></div>
+      <div class="conds">${def.map(x=>condCard(x.c,x.i)).join('')}</div>
+    </div>
+    <div class="cond-group">
+      <div class="cgt"><span class="cgd prop"></span>Pendientes de validar<span class="cgc">${prop.length}</span></div>
+      <div class="conds">${prop.map(x=>condCard(x.c,x.i)).join('')}</div>
+    </div>`;
 }
 
 /* ===== comms / orders helpers ===== */
