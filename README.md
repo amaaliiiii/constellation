@@ -1,31 +1,29 @@
-# Constellation · Checkout multi-orden (TESLA)
+# Constellation · Flujos de pago multicart & multicheckout
 
-Prototipo navegable **paso a paso** del flujo de **checkout multi-orden** de Constellation (Rappi) — Payments. Un pago, N entregas: el checkout crea N órdenes bajo un `group_order_id`, evalúa fraude una vez y cobra una transacción por tienda.
+Artifact **visual e interactivo** para alinear a Product, Payments, Fraude y Tech sobre el comportamiento del **checkout multi-orden** de Rappi: un método de pago, varias tiendas, un cobro independiente por orden. Ejemplo con **2 tiendas / 2 órdenes**, extensible a N.
 
-## Ver el prototipo
+## Ver el artifact
 
 Abre [`index.html`](./index.html) en el navegador (o sirve la carpeta con `python3 -m http.server`).
 
-## Qué incluye
+## Estructura
 
-Layout tipo **stepper** con pantallas anotadas (callouts numerados ↔ leyenda):
+1. **Condiciones que debe cumplir el flujo** — reglas base, distinguiendo *definidas* vs *propuestas pendientes de validar*.
+2. **Simulador de escenarios** — toggle **Con BNPL / Sin BNPL**. Al elegir un escenario muestra, en paralelo por cada orden: estado, qué pasa a nivel de sistema, qué ve el usuario (mockup), qué acciones puede tomar, qué pasa después y qué comunicaciones recibe.
+3. **Preguntas y decisiones pendientes** — puntos abiertos para Payments, Fraude y Tech.
 
-- **Celular al centro** — mockups estilo Rappi, navegables con `‹ / ›` y "Paso X de N".
-- **Pins numerados** sobre cada pantalla señalando los elementos clave y qué hacen.
-- **Panel derecho** por pantalla: descripción, leyenda, bloque "A dónde va" (transición de sistema) y preguntas abiertas.
+## Escenarios
 
-## Flujos
+**Con BNPL** (no se cobra al crear; rechazo por fraude)
+- A · Ambas órdenes se crean
+- B · Usuario bloqueado por seguridad (ninguna orden)
+- C · Falla la 2ª orden → continuar con la 1ª / cancelar todo
 
-| Flujo | Pantallas |
-|---|---|
-| Happy path · 2 entregas | Checkout → Creando → Confirmando → Confirmado |
-| N tiendas · 3 entregas | Checkout (3) → Creando → Confirmando → Confirmado |
-| Regla de método de pago | Método no válido para todas las tiendas |
-| Sin fondos · rollback | Falla la 1ª → fallan todas |
-| Remedy · falla 2ª orden | On-hold → nuevo método / cancelar → devolución |
-| Con BNPL · éxito | Órdenes creadas, cobro al entregar |
-| Rechazo por fraude | Fallan por fraude del usuario *(propuesta UI)* |
-| Remedy en fraude | Challenge solo en la orden de mayor valor *(propuesta UI)* |
-| Comunicaciones | 1 cobro = 1 notificación · devolución *(propuesta UI)* |
+**Sin BNPL** (se intenta el pago al crear; fraude o fondos/cupo)
+- D · Ambas órdenes y pagos OK
+- E · Usuario bloqueado por seguridad (ninguna orden)
+- F · Falla la 2ª (seguridad) → continuar / cancelar ambas (reversión)
+- G · Falla el pago de la 1ª por fondos/cupo → cambiar tarjeta / volver
+- H · Falla el pago de la 2ª por fondos/cupo → cambiar tarjeta (2ª) / continuar con la 1ª / cancelar ambas
 
-Las pantallas marcadas **PROPUESTA UI** son diseños abiertos a discusión (los "¿Cómo comunicamos?" aún no están definidos).
+Los textos de usuario son amigables (sin términos internos como *fraude*, *remedy* u *on hold*). Las propuestas sin cerrar llevan la etiqueta **Pendiente de validar**.
