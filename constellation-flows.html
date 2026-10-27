@@ -54,6 +54,10 @@
   #sec-checkout .phone{height:auto;}
   #sec-checkout .screen .bottombar{position:static;}
   #sec-checkout .screen .topbar{position:static;}
+  /* al disparar el flujo (modales) el teléfono vuelve a ser un frame con alto fijo */
+  #sec-checkout .phone.co-modal{height:620px;}
+  #sec-checkout .phone.co-modal .screen{height:100%;overflow-y:auto;}
+  .co-hint{font-size:11.5px;color:var(--turbo);font-weight:600;margin-top:12px;display:flex;align-items:center;gap:6px;}
   .co-notes{flex:1;min-width:260px;display:flex;flex-direction:column;gap:12px;padding-top:4px;}
   .co-note{display:flex;gap:12px;background:var(--panel);border:1px solid var(--side-line);border-radius:14px;padding:14px 16px;font-size:12.5px;color:#3A414E;line-height:1.5;box-shadow:0 1px 2px rgba(16,24,40,.04);}
   .co-note .con{width:24px;height:24px;border-radius:50%;background:var(--turbo);color:#06232c;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -343,7 +347,10 @@
         <button data-co="3">3 tiendas</button>
       </div>
       <div class="co-stage">
-        <div class="phone"><div class="screen" id="coScreen"></div></div>
+        <div>
+          <div class="phone"><div class="screen" id="coScreen"></div></div>
+          <div class="co-hint">👆 Toca “Continuar” para recorrer el flujo en vivo</div>
+        </div>
         <div class="co-notes">
           <div class="co-note"><span class="con">1</span><div><b>Método de pago único</b><br>El usuario elige un solo método válido para todas las tiendas. <span class="tag ui">IMPACTA UI</span></div></div>
           <div class="co-note"><span class="con">2</span><div><b>Aviso de N cobros</b><br>“Haremos N cobros a tu método de pago, uno por cada entrega.” <span class="tag ui">IMPACTA UI</span></div></div>
@@ -661,10 +668,25 @@ const STEP_META={
   'remedy-cancelar':{t:'Cancelación y devolución',n:'Si el usuario cancela todo, se cancela lo creado y se devuelve lo cobrado por el flujo regular.',g:'El usuario elige el destino de la devolución → fin.'},
 };
 
-function renderCheckout(co){
-  document.getElementById('coScreen').innerHTML = co==='3'
+let coCurrent='2', coStep=0;
+function coScreens(co){
+  const base = co==='3'
     ? checkout({deliveries:[D_MCD,D_TURBO,D_MARKET],oProd:'$155.900',nProd:'$146.850',tip:'$3.000',total:'$153.850',save:'$24.050'})
     : checkout({deliveries:[D_MCD,D_TURBO],oProd:'$127.500',nProd:'$118.450',tip:'$2.000',total:'$124.450',save:'$19.050'});
+  return [base, SCREENS['creando'](), SCREENS['confirmando'](), SCREENS['exito']()];
+}
+function renderCheckout(co){
+  if(co!==undefined){coCurrent=co;coStep=0;}
+  const screens=coScreens(coCurrent);
+  const el=document.getElementById('coScreen');
+  el.innerHTML=screens[coStep];
+  el.scrollTop=0;
+  const phone=el.parentElement;
+  phone.classList.toggle('co-modal',coStep>0);
+  const adv=()=>{if(coStep<screens.length-1){coStep++;renderCheckout();}};
+  const back=()=>{if(coStep>0){coStep--;renderCheckout();}};
+  el.querySelectorAll('.continuar,.btn-solid,.btn-ghost').forEach(b=>{if(b.disabled)return;b.style.cursor='pointer';b.onclick=adv;});
+  el.querySelectorAll('.sclose,.back').forEach(b=>{b.style.cursor='pointer';b.onclick=back;});
 }
 document.querySelectorAll('#coToggle button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('#coToggle button').forEach(x=>x.classList.remove('on'));
