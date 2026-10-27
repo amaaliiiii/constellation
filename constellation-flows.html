@@ -143,7 +143,8 @@
   .screen .mradio.on{border-color:var(--green);background:radial-gradient(circle,#fff 34%,var(--green) 38%);}
 
   /* ===== SECTION 1 · CONDICIONES ===== */
-  .cond-legend{display:flex;gap:16px;margin:16px 0 20px;}
+  .combo-div{height:1px;background:var(--side-line);margin:40px 0 34px;}
+  .cond-legend{display:flex;gap:16px;margin:16px 0 20px;flex-wrap:wrap;}
   .cond-legend span{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--txt-soft);}
   .conds{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
   .cond{display:flex;gap:13px;background:var(--panel);border:1px solid var(--side-line);border-radius:14px;padding:15px 16px;}
@@ -263,10 +264,9 @@
   <header>
     <div class="logo"><span class="dot">✦</span><div>Constellation<div class="sub">Flujos de pago · multicart & multicheckout</div></div></div>
     <div class="tabs">
-      <div class="tab active" data-sec="checkout"><span class="tn">1</span>Checkout</div>
-      <div class="tab" data-sec="cond"><span class="tn">2</span>Condiciones</div>
-      <div class="tab" data-sec="sim"><span class="tn">3</span>Simulador</div>
-      <div class="tab" data-sec="q"><span class="tn">4</span>Preguntas</div>
+      <div class="tab active" data-sec="checkout"><span class="tn">1</span>Checkout &amp; condiciones</div>
+      <div class="tab" data-sec="sim"><span class="tn">2</span>Simulador</div>
+      <div class="tab" data-sec="q"><span class="tn">3</span>Preguntas</div>
     </div>
     <div class="pills-link">Ejemplo: 2 tiendas · 2 órdenes (extensible a N)</div>
   </header>
@@ -289,10 +289,9 @@
           <div class="co-note"><span class="con">4</span><div><b>Total consolidado</b><br>Un único total a pagar que suma todas las entregas.</div></div>
         </div>
       </div>
-    </section>
 
-    <!-- SECTION 1 -->
-    <section class="section" id="sec-cond">
+      <div class="combo-div"></div>
+
       <div class="s-title">Condiciones que debe cumplir el flujo</div>
       <div class="s-sub">Reglas base del checkout multi-orden. Un método de pago para N órdenes, un cobro independiente por orden. Distinguimos lo que ya está definido de lo que es una propuesta pendiente de validar.</div>
       <div class="cond-legend">
