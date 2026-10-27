@@ -47,9 +47,13 @@
 
   /* ===== CHECKOUT MOCK ===== */
   .co-stage{display:flex;gap:30px;align-items:flex-start;margin-top:14px;flex-wrap:wrap;}
-  .phone{width:360px;height:720px;background:#fff;border-radius:40px;overflow:hidden;color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 10px #000,0 0 0 11px #2a2a2a;flex-shrink:0;}
-  .screen{height:100%;overflow-y:auto;position:relative;scrollbar-width:none;}
+  .phone{width:360px;background:#fff;border-radius:40px;overflow:hidden;color:var(--ink);box-shadow:0 20px 60px rgba(16,24,40,.18),0 0 0 10px #111,0 0 0 11px #2a2a2a;flex-shrink:0;}
+  .screen{position:relative;scrollbar-width:none;}
   .screen::-webkit-scrollbar{display:none;}
+  /* en la vista de overview el teléfono se muestra completo (sin scroll interno) */
+  #sec-checkout .phone{height:auto;}
+  #sec-checkout .screen .bottombar{position:static;}
+  #sec-checkout .screen .topbar{position:static;}
   .co-notes{flex:1;min-width:260px;display:flex;flex-direction:column;gap:12px;padding-top:4px;}
   .co-note{display:flex;gap:12px;background:var(--panel);border:1px solid var(--side-line);border-radius:14px;padding:14px 16px;font-size:12.5px;color:#3A414E;line-height:1.5;box-shadow:0 1px 2px rgba(16,24,40,.04);}
   .co-note .con{width:24px;height:24px;border-radius:50%;background:var(--turbo);color:#06232c;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
