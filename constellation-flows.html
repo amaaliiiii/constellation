@@ -601,9 +601,22 @@ function renderDetail(){
   </div>`;
 
   const pb=document.getElementById('prevBtn'),nb=document.getElementById('nextBtn');
-  if(pb)pb.onclick=()=>{if(stepIdx>0){stepIdx--;renderDetail();}};
-  if(nb)nb.onclick=()=>{if(stepIdx<steps.length-1){stepIdx++;renderDetail();}};
+  const goNext=()=>{if(stepIdx<steps.length-1){stepIdx++;renderDetail();}};
+  const goPrev=()=>{if(stepIdx>0){stepIdx--;renderDetail();}};
+  if(pb)pb.onclick=goPrev;
+  if(nb)nb.onclick=goNext;
   document.querySelectorAll('.dots i').forEach(d=>d.onclick=()=>{stepIdx=+d.dataset.d;renderDetail();});
+  // los botones de la propia pantalla (UI real) también avanzan el flujo
+  const fs=document.getElementById('flowScreen');
+  if(fs){
+    fs.querySelectorAll('.continuar,.btn-solid,.btn-ghost,.btn-danger,.opt').forEach(b=>{
+      if(b.disabled)return;
+      b.style.cursor='pointer';
+      b.onclick=goNext;
+    });
+    // volver atrás tocando la flecha / cerrar de la pantalla
+    fs.querySelectorAll('.sclose,.back').forEach(b=>{b.style.cursor='pointer';b.onclick=goPrev;});
+  }
 }
 
 /* ===== CHECKOUT MOCK ===== */
