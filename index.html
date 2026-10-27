@@ -330,9 +330,35 @@
   .q .qn{font-family:var(--mono);font-size:11px;color:#B07D16;font-weight:600;}
   .q .qt{font-size:12.5px;color:#2B2B2E;line-height:1.5;margin:7px 0 10px;}
   .foot-note{font-size:11.5px;color:var(--txt-dim);margin-top:22px;line-height:1.5;max-width:820px;}
+
+  /* ===== PASSWORD GATE ===== */
+  body.locked header,body.locked main{display:none;}
+  #gate{display:none;flex:1;align-items:center;justify-content:center;background:var(--bg);}
+  body.locked #gate{display:flex;}
+  .gate-card{width:360px;background:#fff;border:1px solid var(--side-line);border-radius:20px;padding:32px 28px 28px;box-shadow:0 12px 40px rgba(16,24,40,.08);text-align:center;}
+  .gate-card .gdot{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--turbo));display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 16px;}
+  .gate-card h1{font-size:20px;font-weight:700;}
+  .gate-card p{font-size:13px;color:var(--txt-soft);margin:8px 0 20px;line-height:1.45;}
+  .gate-card input{width:100%;border:1.5px solid #E2E2E6;border-radius:12px;padding:13px 14px;font-size:14px;font-family:inherit;outline:none;}
+  .gate-card input:focus{border-color:var(--green);}
+  .gate-card input.bad{border-color:var(--red);background:#FFF6F6;}
+  .gate-card button{width:100%;margin-top:12px;background:var(--green);color:#fff;border:none;border-radius:22px;padding:13px;font-size:14.5px;font-weight:600;font-family:inherit;cursor:pointer;}
+  .gate-err{font-size:12px;color:var(--red);margin-top:10px;min-height:18px;}
 </style>
 </head>
-<body>
+<body class="locked">
+  <div id="gate">
+    <div class="gate-card">
+      <div class="gdot">✦</div>
+      <h1>Constellation</h1>
+      <p>Ingresa la clave para ver los flujos de pago multicart &amp; multicheckout.</p>
+      <form id="gateForm">
+        <input type="password" id="gatePw" placeholder="Clave" autocomplete="current-password" />
+        <button type="submit">Entrar</button>
+        <div class="gate-err" id="gateErr"></div>
+      </form>
+    </div>
+  </div>
   <header>
     <div class="logo"><span class="dot">✦</span><div>Constellation<div class="sub">Flujos de pago · multicart & multicheckout</div></div></div>
     <div class="tabs">
@@ -724,7 +750,18 @@ document.querySelectorAll('#toggle button').forEach(b=>b.onclick=()=>{
   renderFlowNote();renderScenCards();renderDetail();
 });
 
-renderCheckout('2');renderCond();renderQS();renderFlowNote();renderScenCards();renderDetail();
+function unlock(){
+  document.body.classList.remove('locked');
+  sessionStorage.setItem('constellation-ok','1');
+  renderCheckout('2');renderCond();renderQS();renderFlowNote();renderScenCards();renderDetail();
+}
+if(sessionStorage.getItem('constellation-ok')==='1'){unlock();}
+document.getElementById('gateForm').onsubmit=e=>{
+  e.preventDefault();
+  const inp=document.getElementById('gatePw');
+  if(inp.value==='constellation2026'){unlock();}
+  else{inp.classList.add('bad');document.getElementById('gateErr').textContent='Clave incorrecta.';inp.focus();inp.select();}
+};
 </script>
 </body>
 </html>
