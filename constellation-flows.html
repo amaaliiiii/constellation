@@ -146,6 +146,62 @@
   .screen .method .mbadge{font-size:10.5px;color:var(--red);font-weight:600;}
   .screen .mradio{width:20px;height:20px;border-radius:50%;border:2px solid #D1D1D6;}
   .screen .mradio.on{border-color:var(--green);background:radial-gradient(circle,#fff 34%,var(--green) 38%);}
+  /* ---- pantallas de estado / modales (UI real) ---- */
+  .screen .state{height:100%;display:flex;flex-direction:column;padding:0 22px;}
+  .screen .state .sclose{padding:18px 0 0;font-size:22px;color:var(--ink);}
+  .screen .state .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+  .screen .pulse{width:92px;height:92px;border-radius:50%;position:relative;margin-bottom:26px;display:flex;align-items:center;justify-content:center;}
+  .screen .pulse .ring{position:absolute;inset:0;border-radius:50%;border:3px solid var(--green);opacity:0;animation:ring 1.8s ease-out infinite;}
+  .screen .pulse .ring:nth-child(2){animation-delay:.6s;}.screen .pulse .ring:nth-child(3){animation-delay:1.2s;}
+  @keyframes ring{0%{transform:scale(.55);opacity:.9;}100%{transform:scale(1.25);opacity:0;}}
+  .screen .pulse .core{width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--turbo));display:flex;align-items:center;justify-content:center;}
+  .screen .spin{width:66px;height:66px;border-radius:50%;border:5px solid #EDEDED;border-top-color:var(--green);animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .screen .state h2{font-size:24px;font-weight:700;line-height:1.2;margin-bottom:12px;}
+  .screen .state .ssub{font-size:13.5px;color:var(--gray);line-height:1.5;max-width:250px;}
+  .screen .pillrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+  .screen .ipill{background:#F4F4F5;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:500;color:var(--ink-2);display:flex;align-items:center;gap:6px;}
+  .screen .mini-cards{width:100%;margin-top:26px;display:flex;flex-direction:column;gap:10px;}
+  .screen .mcard{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:13px 14px;text-align:left;background:#fff;}
+  .screen .mcard .mt{flex:1;}.screen .mcard .mt .a{font-size:13.5px;font-weight:600;}.screen .mcard .mt .b{font-size:12px;color:var(--gray);margin-top:1px;}
+  .screen .mcard .amt{font-size:14px;font-weight:700;}
+  .screen .st-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .screen .st-dot.pend{background:var(--amber);}.screen .st-dot.ok{background:var(--green);}.screen .st-dot.err{background:var(--red);}
+  .screen .minispin{width:18px;height:18px;border:2.5px solid #EDEDED;border-top-color:var(--amber);border-radius:50%;animation:spin .9s linear infinite;flex-shrink:0;}
+  .screen .state-foot{padding:14px 0 24px;}
+  .screen .btn-ghost{width:100%;background:#fff;border:1.5px solid #E2E2E6;border-radius:26px;padding:14px;font-size:14.5px;font-weight:600;color:var(--ink);cursor:pointer;font-family:inherit;}
+  .screen .btn-solid{width:100%;background:var(--green);border:none;border-radius:26px;padding:15px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+  .screen .btn-danger{width:100%;background:#fff;border:1.5px solid #F2C2C6;border-radius:26px;padding:14px;font-size:14.5px;font-weight:600;color:var(--red);cursor:pointer;font-family:inherit;}
+  .screen .note-strip{background:#FFFBEF;border:1px dashed #E8D08A;border-radius:10px;padding:10px 12px;font-size:11.5px;color:#9A7A1E;line-height:1.4;margin-top:14px;display:flex;gap:8px;text-align:left;}
+  .screen .big-icon{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;}
+  .screen .big-icon.ok{background:#E4F8F0;}.screen .big-icon.err{background:#FDEBEC;}
+  .screen .opt{display:flex;align-items:center;gap:13px;border:1.5px solid #E6E6EA;border-radius:14px;padding:14px;width:100%;text-align:left;cursor:pointer;background:#fff;}
+  .screen .opt .oi{width:38px;height:38px;border-radius:10px;background:#F4F4F5;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .screen .opt .ot{flex:1;}.screen .opt .ot .a{font-size:14px;font-weight:600;}.screen .opt .ot .b{font-size:12px;color:var(--gray);margin-top:1px;}
+  .screen .proposal{position:absolute;top:16px;right:18px;background:#FFF4D6;color:#9A6B16;border:1px solid #E8D08A;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.4px;z-index:25;font-family:var(--mono);}
+  .screen .codebox{display:flex;gap:8px;margin-top:18px;justify-content:center;}
+  .screen .codebox span{width:38px;height:46px;border:1.5px solid #E2E2E6;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:var(--ink);}
+  .screen .codebox span.filled{border-color:var(--ink);background:#FAFAFA;}
+
+  /* ---- device frame + stepper en el simulador ---- */
+  .flowphone{width:360px;flex-shrink:0;}
+  .flowphone .phone{height:684px;}
+  .flowphone .screen{height:100%;overflow-y:auto;}
+  .stepper{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--side-line);border-radius:30px;padding:8px 10px;margin-top:16px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
+  .navbtn{width:40px;height:40px;border-radius:50%;background:#F3F5F8;border:1px solid var(--side-line);color:var(--ink);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;}
+  .navbtn:hover:not(:disabled){background:var(--green);border-color:var(--green);color:#fff;}
+  .navbtn:disabled{opacity:.35;cursor:not-allowed;}
+  .stepinfo{text-align:center;flex:1;min-width:0;}
+  .stepinfo .sp{font-size:10.5px;color:var(--txt-dim);font-family:var(--mono);letter-spacing:.5px;}
+  .stepinfo .st{font-size:13.5px;font-weight:600;margin-top:1px;color:var(--ink);}
+  .dots{display:flex;gap:6px;justify-content:center;margin-top:9px;}
+  .dots i{width:7px;height:7px;border-radius:50%;background:#D5DAE2;cursor:pointer;}
+  .dots i.on{background:var(--green);width:18px;border-radius:4px;}
+  .stepnote{background:var(--panel-2);border:1px solid var(--side-line);border-left:3px solid var(--blue);border-radius:12px;padding:13px 14px;margin-bottom:16px;}
+  .stepnote .snl{font-size:10px;color:var(--txt-dim);text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+  .stepnote .snt{font-size:13px;color:var(--ink);margin-top:5px;line-height:1.5;}
+  .stepnote .sng{font-size:11.5px;color:var(--txt-soft);margin-top:9px;font-family:var(--mono);line-height:1.45;display:flex;gap:7px;}
+  .stepnote .sng b{color:var(--ink);font-weight:600;}
 
   /* ===== SECTION 1 · CONDICIONES ===== */
   .combo-div{height:1px;background:var(--side-line);margin:40px 0 34px;}
@@ -212,7 +268,7 @@
   .ord.retry .obadge{background:rgba(77,141,245,.16);color:#2E63C4;}
   .ord .oline{font-size:11.5px;color:var(--txt-soft);margin-top:10px;line-height:1.4;}
 
-  .grid2{display:grid;grid-template-columns:330px 1fr;gap:22px;align-items:start;}
+  .grid2{display:grid;grid-template-columns:384px 1fr;gap:28px;align-items:start;}
   @media(max-width:900px){.grid2{grid-template-columns:1fr;}.orders{grid-template-columns:1fr;}}
 
   /* phone */
@@ -364,21 +420,21 @@ function commIcon(store,type){if(type==='bank')return'🏦';if(store===T1)return
 
 /* ===== ESCENARIOS ===== */
 const SCEN={
- A:{flow:'bnpl',letter:'A',name:'Ambas órdenes se crean',result:[['ok'],['ok']],pending:false,
+ A:{flow:'bnpl',letter:'A',name:'Ambas órdenes se crean',result:[['ok'],['ok']],pending:false,steps:['checkout-base','creando','exito-bnpl'],
    orders:[{store:T1,st:'ok',badge:'Creada',line:'Pago al entregar (BNPL)'},{store:T2,st:'ok',badge:'Creada',line:'Pago al entregar (BNPL)'}],
    system:['BNPL: no se cobra al crear las órdenes','Se crean las 2 órdenes bajo un group_order_id','El cobro ocurrirá al momento de la entrega'],
    screen:{icon:'ok',title:'¡Tus pedidos están confirmados!',text:'Creamos tus 2 pedidos. Pagarás al recibir cada uno.'},
    comms:[{store:T1,type:'ok',text:'¡Tu pedido de McDonald\'s Turbo está confirmado!'},{store:T2,type:'ok',text:'¡Tu pedido de Turbo está confirmado!'}],
    actions:[]},
 
- B:{flow:'bnpl',letter:'B',name:'Usuario bloqueado por seguridad',result:[['fail'],['fail']],pending:false,
+ B:{flow:'bnpl',letter:'B',name:'Usuario bloqueado por seguridad',result:[['fail'],['fail']],pending:false,steps:['checkout-base','creando','rechazo-fraude'],
    orders:[{store:T1,st:'fail',badge:'No creada',line:'No pudimos procesar'},{store:T2,st:'fail',badge:'No creada',line:'No se intentó'}],
    system:['La validación de riesgo bloquea al usuario en la 1ª orden','No se crea ninguna orden','BNPL: no hay cobro involucrado'],
    screen:{icon:'fail',title:'No pudimos procesar tus pedidos',text:'No pudimos procesar tus pedidos en este momento. Si necesitas ayuda, contáctanos.'},
    comms:[{store:'Rappi',type:'fail',text:'No pudimos procesar tus pedidos en este momento.'}],
    actions:[{label:'Contactar soporte',res:{screen:{icon:'info',title:'Te conectamos con soporte',text:'Un agente te ayudará a resolverlo.'},comms:[{store:'Rappi',type:'info',text:'Te conectamos con un agente de soporte.'}],after:'No se sugiere cambiar el método de pago: es un bloqueo del usuario, no un problema de la tarjeta.'}}]},
 
- C:{flow:'bnpl',letter:'C',name:'Falla la 2ª orden (seguridad)',result:[['hold'],['fail']],pending:true,
+ C:{flow:'bnpl',letter:'C',name:'Falla la 2ª orden (seguridad)',result:[['hold'],['fail']],pending:true,steps:['checkout-base','creando','remedy-segunda','remedy-cancelar'],
    orders:[{store:T1,st:'hold',badge:'En espera (on hold)',line:'Lista para continuar · pago al entregar'},{store:T2,st:'fail',badge:'Rechazada',line:'No se pudo completar'}],
    system:['La 1ª orden se crea correctamente','La validación de riesgo rechaza la 2ª orden','Proponemos mantener la 1ª en espera mientras el usuario decide — pendiente de validar'],
    screen:{icon:'decide',title:'Una parte de tu pedido no se pudo completar',text:'No pudimos completar tu pedido de Turbo. Tu pedido de McDonald\'s Turbo sí está listo para continuar. ¿Qué quieres hacer?'},
@@ -396,21 +452,21 @@ const SCEN={
        after:'Como es BNPL no hubo cobro, no hay devolución. Ninguna orden continúa.'}},
    ]},
 
- D:{flow:'nobnpl',letter:'D',name:'Ambas órdenes y pagos OK',result:[['ok'],['ok']],pending:false,
+ D:{flow:'nobnpl',letter:'D',name:'Ambas órdenes y pagos OK',result:[['ok'],['ok']],pending:false,steps:['checkout-base','creando','confirmando','exito'],
    orders:[{store:T1,st:'ok',badge:'Creada · pagada',line:'Cobro $90.850 aprobado'},{store:T2,st:'ok',badge:'Creada · pagada',line:'Cobro $31.600 aprobado'}],
    system:['Se intenta el pago al crear cada orden','Cobro 1 y Cobro 2 aprobados','El banco puede enviar una notificación por cada transacción'],
    screen:{icon:'ok',title:'¡Tus pedidos están confirmados!',text:'Procesamos un cobro por cada pedido.'},
    comms:[{store:T1,type:'ok',text:'¡Tu pedido de McDonald\'s Turbo está confirmado!'},{store:T2,type:'ok',text:'¡Tu pedido de Turbo está confirmado!'},{store:'Banco',type:'bank',text:'2 cargos a tu tarjeta *2122: $90.850 y $31.600.'}],
    actions:[]},
 
- E:{flow:'nobnpl',letter:'E',name:'Usuario bloqueado por seguridad',result:[['fail'],['fail']],pending:false,
+ E:{flow:'nobnpl',letter:'E',name:'Usuario bloqueado por seguridad',result:[['fail'],['fail']],pending:false,steps:['checkout-base','creando','rechazo-fraude'],
    orders:[{store:T1,st:'fail',badge:'No creada',line:'No pudimos procesar'},{store:T2,st:'fail',badge:'No creada',line:'No se intentó'}],
    system:['La validación de riesgo bloquea al usuario en la 1ª orden','No se crea ninguna orden','No se procesa ningún cobro'],
    screen:{icon:'fail',title:'No pudimos procesar tus pedidos',text:'No pudimos procesar tus pedidos en este momento. Si necesitas ayuda, contáctanos.'},
    comms:[{store:'Rappi',type:'fail',text:'No pudimos procesar tus pedidos en este momento.'}],
    actions:[{label:'Contactar soporte',res:{screen:{icon:'info',title:'Te conectamos con soporte',text:'Un agente te ayudará a resolverlo.'},comms:[{store:'Rappi',type:'info',text:'Te conectamos con un agente de soporte.'}],after:'No se sugiere cambiar el método de pago: es un bloqueo del usuario, no un problema de la tarjeta.'}}]},
 
- F:{flow:'nobnpl',letter:'F',name:'Falla la 2ª (seguridad)',result:[['hold'],['fail']],pending:true,
+ F:{flow:'nobnpl',letter:'F',name:'Falla la 2ª (seguridad)',result:[['hold'],['fail']],pending:true,steps:['checkout-base','creando','confirmando','remedy-segunda','remedy-cancelar'],
    orders:[{store:T1,st:'hold',badge:'En espera (on hold)',line:'Cobro $90.850 aprobado · lista para continuar'},{store:T2,st:'fail',badge:'Rechazada',line:'No se pudo completar'}],
    system:['Cobro 1 aprobado, la 1ª orden se crea','La validación de riesgo rechaza la 2ª orden','Proponemos mantener la 1ª en espera — pendiente de validar'],
    screen:{icon:'decide',title:'Una parte de tu pedido no se pudo completar',text:'No pudimos completar tu pedido de Turbo. Tu pedido de McDonald\'s Turbo está listo. ¿Qué quieres hacer?'},
@@ -428,7 +484,7 @@ const SCEN={
        after:'Se gestiona la reversión/devolución del pago de la orden 1 — detalle operativo pendiente con Payments.',prop:true}},
    ]},
 
- G:{flow:'nobnpl',letter:'G',name:'Falla el pago de la 1ª (fondos/cupo)',result:[['fail'],['pending']],pending:true,
+ G:{flow:'nobnpl',letter:'G',name:'Falla el pago de la 1ª (fondos/cupo)',result:[['fail'],['pending']],pending:true,steps:['checkout-base','creando','confirmando','sin-fondos'],
    orders:[{store:T1,st:'fail',badge:'Pago rechazado',line:'Fondos o cupo insuficiente'},{store:T2,st:'pending',badge:'Pendiente de definir',line:'¿No se intenta o también se rechaza?'}],
    system:['Se intenta el pago de la 1ª orden','Rechazo por fondos/cupo insuficiente','La 2ª orden: ¿no se intenta o también se rechaza? — pendiente de definir'],
    screen:{icon:'fail',title:'No pudimos procesar el pago',text:'No pudimos procesar el pago de tus pedidos. Revisa los fondos disponibles o intenta con otra tarjeta.',note:'Si el banco no da el motivo, se usa un mensaje genérico de rechazo del pago.'},
@@ -444,7 +500,7 @@ const SCEN={
        comms:[],after:'El usuario regresa al checkout. No se creó ninguna orden.'}},
    ]},
 
- H:{flow:'nobnpl',letter:'H',name:'Falla el pago de la 2ª (fondos/cupo)',result:[['hold'],['fail']],pending:true,
+ H:{flow:'nobnpl',letter:'H',name:'Falla el pago de la 2ª (fondos/cupo)',result:[['hold'],['fail']],pending:true,steps:['checkout-base','creando','confirmando','remedy-segunda','remedy-cancelar'],
    orders:[{store:T1,st:'hold',badge:'En espera (on hold)',line:'Cobro $90.850 aprobado'},{store:T2,st:'fail',badge:'Pago rechazado',line:'Fondos o cupo insuficiente'}],
    system:['Cobro 1 aprobado, la 1ª orden se crea','Cobro 2 rechazado por fondos/cupo','Proponemos mantener la 1ª en espera — pendiente de validar'],
    screen:{icon:'decide',title:'No pudimos procesar el pago de un pedido',text:'Tu pedido de McDonald\'s Turbo está listo, pero no pudimos procesar el pago de Turbo. Elige cómo quieres continuar.'},
@@ -483,7 +539,7 @@ const QS=[
 function renderQS(){document.getElementById('qs').innerHTML=QS.map((q,i)=>`<div class="q"><div class="qn">Q${i+1} · <span class="tag area">${q.a}</span></div><div class="qt">${q.t}</div></div>`).join('');}
 
 /* ===== STATE ===== */
-let flow='bnpl', scen='A', actIdx=null;
+let flow='bnpl', scen='A', stepIdx=0;
 
 function renderFlowNote(){
   document.getElementById('flowNote').textContent = flow==='bnpl'
@@ -499,7 +555,7 @@ function renderScenCards(){
       <div class="sl"><span class="letter">${s.letter}</span><span class="nm">${s.name}</span></div>
       <div class="res">${s.result.map(o=>`<span class="mini-dot d-${o[0]}"></span>`).join('')} ${s.letter===scen?'Seleccionado':'Ver escenario'}</div>
     </div>`).join('');
-  document.querySelectorAll('.scard').forEach(c=>c.onclick=()=>{scen=c.dataset.s;actIdx=null;renderScenCards();renderDetail();});
+  document.querySelectorAll('.scard').forEach(c=>c.onclick=()=>{scen=c.dataset.s;stepIdx=0;renderScenCards();renderDetail();});
 }
 function orderHTML(o){
   return `<div class="ord ${o.st}"><div class="oh">${avatar(o.store)}<div><div class="ostore">${o.store===T1?'Tienda 1':'Tienda 2'}</div><div class="oname">${o.store}</div></div></div><span class="obadge">${o.badge}</span><div class="oline">${o.line}</div></div>`;
@@ -507,48 +563,47 @@ function orderHTML(o){
 function commHTML(c){return `<div class="comm ${c.type}"><span class="cav">${commIcon(c.store,c.type)}</span><div><div class="cfrom">${commFrom(c.store)}</div><div class="ctext">${c.text}</div></div></div>`;}
 
 function renderDetail(){
-  const s=SCEN[scen];const nob=flow==='nobnpl';
-  const base=actIdx==null?null:s.actions[actIdx].res;
-  const orders=base&&base.orders?base.orders:s.orders;
-  const screen=base?base.screen:s.screen;
-  const comms=base?(base.comms||[]):s.comms;
-  const system=(base&&base.system)?base.system:s.system;
-  const after=base?base.after:null;
-  const afterProp=base?base.prop:false;
-  const showActions=actIdx==null && s.actions.length>0;
-
-  const acts=s.actions.map((a,i)=>`<button class="uact ${a.danger?'danger':(i===0?'primary':'ghost')} ${nob&&i===0&&!a.danger?'nob':''}" data-a="${i}">${a.label}${a.pending?'<span class="vp">PENDIENTE</span>':''}</button>`).join('');
+  const s=SCEN[scen];
+  const steps=s.steps;
+  if(stepIdx<0)stepIdx=0; if(stepIdx>=steps.length)stepIdx=steps.length-1;
+  const sid=steps[stepIdx];
+  const meta=STEP_META[sid]||{t:'',n:'',g:''};
+  const orders=s.orders, comms=s.comms, system=s.system;
+  const dots=steps.map((_,i)=>`<i class="${i===stepIdx?'on':''}" data-d="${i}"></i>`).join('');
 
   document.getElementById('detail').innerHTML=`<div class="detail">
     <div class="detail-head"><span class="letter">${s.letter}</span><h3>${s.name}</h3>${s.pending?'<span class="tag prop ptag">INCLUYE PROPUESTAS</span>':''}</div>
-    <div class="detail-sub">${flow==='bnpl'?'Con BNPL':'Sin BNPL'} · Estado de cada orden, lo que ve el usuario, acciones y comunicaciones.</div>
-
-    <h4 style="font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--txt-dim);font-weight:600;margin-bottom:11px;">Estado de cada orden</h4>
-    <div class="orders">${orders.map(orderHTML).join('')}</div>
+    <div class="detail-sub">${flow==='bnpl'?'Con BNPL':'Sin BNPL'} · Flujo completo con la UI real. Avanza y retrocede con los controles <b>‹ ›</b>.</div>
 
     <div class="grid2">
-      <div>
-        <h4>Qué ve el usuario</h4>
-        <div class="uphone"><div class="ubar"><span class="rp">✦ Rappi</span><span class="x">✕</span></div>
-          <div class="ubody">
-            <div class="uicon ${screen.icon}">${screen.icon==='ok'?ICON.check:(screen.icon==='fail'?ICON.alert:(screen.icon==='decide'?ICON.branch:ICON.info))}</div>
-            <div class="utitle">${screen.title}</div>
-            <div class="utext">${screen.text}</div>
-            ${screen.note?`<div class="unote">${screen.note}</div>`:''}
-            ${showActions?`<div class="uactions">${acts}</div>`:(actIdx!=null?`<div class="uchosen">Acción elegida: <b>${s.actions[actIdx].label}</b></div>`:'')}
-          </div></div>
+      <div class="flowphone">
+        <h4 style="margin-bottom:11px;">Flujo en la app (UI real)</h4>
+        <div class="phone"><div class="screen" id="flowScreen">${SCREENS[sid]()}</div></div>
+        <div class="stepper">
+          <button class="navbtn" id="prevBtn" ${stepIdx===0?'disabled':''}>‹</button>
+          <div class="stepinfo"><div class="sp">PASO ${stepIdx+1} DE ${steps.length}</div><div class="st">${meta.t}</div></div>
+          <button class="navbtn" id="nextBtn" ${stepIdx===steps.length-1?'disabled':''}>›</button>
+        </div>
+        <div class="dots">${dots}</div>
       </div>
       <div>
+        <div class="stepnote">
+          <div class="snl">En este paso</div>
+          <div class="snt">${meta.n}</div>
+          <div class="sng">➜ <span><b>A dónde va:</b> ${meta.g}</span></div>
+        </div>
+        <h4 style="font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--txt-dim);font-weight:600;margin-bottom:11px;">Estado de las órdenes · resultado del escenario</h4>
+        <div class="orders" style="grid-template-columns:1fr;margin-bottom:20px;">${orders.map(orderHTML).join('')}</div>
         <div class="panel-block"><h4>⚙ Qué sucede a nivel de sistema</h4><ul class="syslist">${system.map(x=>`<li>${x}</li>`).join('')}</ul></div>
-        <div class="panel-block"><h4>✉ Comunicaciones que recibe</h4><div class="comms">${comms.length?comms.map(commHTML).join(''):'<div class="comm-empty">Se definen según la acción que tome el usuario.</div>'}</div></div>
-        ${after?`<div class="after ${afterProp?'prop':''}"><div class="al">Qué sucede después</div><div class="atx">${after}</div></div>`:''}
-        ${actIdx!=null?`<button class="reset" id="resetBtn">↺ Volver a las opciones</button>`:''}
+        <div class="panel-block"><h4>✉ Comunicaciones que recibe</h4><div class="comms">${comms.length?comms.map(commHTML).join(''):'<div class="comm-empty">Se definen según la decisión que tome el usuario en el flujo.</div>'}</div></div>
       </div>
     </div>
   </div>`;
 
-  document.querySelectorAll('.uact[data-a]').forEach(b=>b.onclick=()=>{actIdx=+b.dataset.a;renderDetail();});
-  const rb=document.getElementById('resetBtn');if(rb)rb.onclick=()=>{actIdx=null;renderDetail();};
+  const pb=document.getElementById('prevBtn'),nb=document.getElementById('nextBtn');
+  if(pb)pb.onclick=()=>{if(stepIdx>0){stepIdx--;renderDetail();}};
+  if(nb)nb.onclick=()=>{if(stepIdx<steps.length-1){stepIdx++;renderDetail();}};
+  document.querySelectorAll('.dots i').forEach(d=>d.onclick=()=>{stepIdx=+d.dataset.d;renderDetail();});
 }
 
 /* ===== CHECKOUT MOCK ===== */
@@ -558,7 +613,8 @@ const S={back:'‹',
   check:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>',
   pen:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16z"/></svg>',
   mcd:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFC72C" stroke-width="2.4"><path d="M4 20V8c0-2 3-2 3 0v6c0-5 3-5 3 0V8c0-2 4-2 4 0v6c0-5 3-5 3 0v6"/></svg>',
-  turbo:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>'};
+  turbo:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>',
+  cart:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M7 4h-2l-1 2 2 11h12l2-9H6"/><circle cx="9" cy="20" r="1.4" fill="#fff"/><circle cx="16" cy="20" r="1.4" fill="#fff"/></svg>'};
 const MAP=`<div class="map"><div class="road r4"></div><div class="road r1"></div><div class="road r2"></div><div class="road r3"></div><span class="maplabel" style="top:28px;left:46px;">Toll</span><span class="maplabel" style="top:12px;right:24px;">C. Río Lima</span><span class="gmark">Google</span><div class="pin-dot"></div><div class="pin"><div class="head"><svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M12 3 3 10v11h6v-6h6v6h6V10z"/></svg></div></div><div class="adjust"><svg width="13" height="13" viewBox="0 0 24 24" fill="#17171a"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Ajustar punto de entrega</div></div>`;
 const ADDRESS=`<div class="row"><span class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" stroke-width="1.8"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div class="rtext"><div class="t1">Mi casa</div><div class="t2">Carrera 11 #82-01</div></div><span class="chev">›</span></div><div class="row"><span class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg></span><div class="rtext"><div class="t1">Detalles</div><div class="t2">Edificio 82, Apto 1202</div></div><span class="chev">›</span></div><div class="row"><span class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><div class="rtext"><div class="t1">Déjalo en recepción</div><div class="t2 link">Agregar instrucciones</div></div><span class="chev">›</span></div>`;
 function deliv(o){return `<div class="deliv-card"><div class="deliv-top"><span class="logo ${o.logo}">${o.logoSvg}</span><div class="dt"><div class="n">${o.name}</div><div class="p">${o.products} productos</div></div><span class="trash">${S.trash}</span></div><div class="eta-row"><span class="radio ${o.color}">${S.check}</span><div class="eta-mid"><div class="e1 ${o.color}">${o.bolt?S.bolt(o.boltC):''}${o.title}</div><div class="e2">${o.time}</div></div><span class="cambiar">Cambiar</span></div><div class="tip-label">Propina:</div><div class="tips"><span class="tip sel">$1.000</span><span class="tip">$2.000</span><span class="tip">$3.000</span><span class="tip otro">Otro ${S.pen}</span></div><div class="subtotal"><span class="sl">Subtotal entrega ${o.idx} <span class="cv">▾</span></span><span class="sv">${o.subtotal}</span></div></div>`;}
@@ -567,6 +623,31 @@ const D_TURBO={logo:'turbo',logoSvg:S.turbo,name:'Turbo',products:5,color:'teal'
 const D_MARKET={logo:'market',logoSvg:S.turbo,name:'Market Turbo',products:3,color:'amber',bolt:false,title:'Turbo',time:'15 - 20 min',idx:3,subtotal:'$28.400'};
 function checkout(cfg){const n=cfg.deliveries.length;const pay=`<div class="pay-row"><span class="visa"><span>VISA</span></span><div><div class="pt1">Crédito *2122 • 1 cuota <span class="caret">▾</span></div><div class="pt2">DETAIL INFORMATION</div></div></div><div class="info-line"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#AEAEB2" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.6" fill="#AEAEB2"/></svg></span><p>Haremos ${n} cobros a tu método de pago, uno por cada entrega incluidos los cargos.</p></div><div class="credit-row"><span class="ca">$80.000 Créditos</span><span class="vermas">Ver más</span><span class="checkbox"></span></div><div class="coupon-row"><span class="ca">Cupones</span><span class="chev">›</span></div>`;
   return `<div class="fade"><div class="topbar"><span class="back">${S.back}</span><h1>Terminar y pagar</h1><span class="crown">👑</span></div>${MAP}${ADDRESS}<div class="divider"></div><div class="section"><div class="section-head"><h2>Método de pago</h2><button class="btn-change">Cambiar</button></div>${pay}</div><div class="divider"></div><div class="section" style="padding-bottom:0;"><div class="section-head"><h2>Este pedido tiene ${n} entregas</h2></div></div>${cfg.deliveries.map(deliv).join('')}<div class="divider"></div><div class="summary"><h2>Resumen de tu pedido</h2><div class="sum-row"><span class="lbl">Costo de productos <span class="i">ⓘ</span></span><span class="val"><span class="old">${cfg.oProd}</span><span class="new">${cfg.nProd}</span></span></div><div class="sum-row"><span class="lbl">Costo de envío <span class="i">ⓘ</span></span><span class="val"><span class="old">$5.000</span><span class="new">$0</span></span></div><div class="sum-row"><span class="lbl">Tarifa de servicio <span class="i">ⓘ</span></span><span class="val"><span class="old">$7.000</span><span class="new">$4.000</span></span></div><div class="sum-row"><span class="lbl">Más rápido</span><span class="val"><span class="old">$2.000</span><span class="new">$0</span></span></div><div class="sum-row"><span class="lbl">Propina</span><span class="val"><span class="new">${cfg.tip}</span></span></div><div class="sum-row total"><span class="lbl">Total a pagar</span><span class="val">${cfg.total}</span></div><div class="pro-banner"><span class="pc">👑</span><p>Ahorras <b>${cfg.save}</b> con Pro Black y promociones adicionales.</p></div></div><div style="height:4px"></div><div class="bottombar"><div><div class="l">Total a pagar</div><div class="v">${cfg.total}</div></div><button class="continuar">Continuar</button></div></div>`;}
+/* ---- pantallas modales (UI real) usadas por el simulador ---- */
+const SCREENS={
+  'checkout-base':()=>checkout({deliveries:[D_MCD,D_TURBO],oProd:'$127.500',nProd:'$118.450',tip:'$2.000',total:'$124.450',save:'$19.050'}),
+  'creando':()=>`<div class="fade state"><div class="sclose">✕</div><div class="center"><div class="pulse"><span class="ring"></span><span class="ring"></span><span class="ring"></span><div class="core">${S.cart}</div></div><h2>Estamos creando<br>tu pedido</h2><div class="ssub">Recibirás 2 entregas</div><div class="pillrow"><span class="ipill">🏬 2 tiendas</span><span class="ipill">🛍️ 10 productos</span></div><div class="mini-cards"><div class="mcard"><span class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" stroke-width="1.8"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div class="mt"><div class="a">Mi Casa</div><div class="b">Carrera 11 #82-01</div></div></div><div class="mcard"><span class="visa"><span>VISA</span></span><div class="mt"><div class="a">Crédito *2122</div><div class="b">2 cobros · uno por entrega</div></div></div></div></div><div class="state-foot"><button class="btn-ghost">Deshacer pedido</button></div></div>`,
+  'confirmando':()=>`<div class="fade state"><div class="sclose">✕</div><div class="center"><div class="spin"></div><h2 style="margin-top:26px;">Confirmando<br>tus pagos</h2><div class="ssub">Estamos validando tus pagos. Pronto será confirmado por tu banco.</div><div class="mini-cards"><div class="mcard"><span class="logo mcd" style="width:34px;height:34px">${S.mcd}</span><div class="mt"><div class="a">McDonald's Turbo</div><div class="b">Cobro 1</div></div><span class="amt">$90.850</span><span class="minispin"></span></div><div class="mcard"><span class="logo turbo" style="width:34px;height:34px">${S.turbo}</span><div class="mt"><div class="a">Turbo</div><div class="b">Cobro 2</div></div><span class="amt">$31.600</span><span class="minispin"></span></div></div><div class="note-strip">💡 Se cobra por separado: una transacción por tienda. El banco notifica cada cargo individualmente.</div></div><div class="state-foot"><button class="btn-solid">Continuar</button></div></div>`,
+  'exito':()=>`<div class="fade state"><div class="sclose">✕</div><div class="center"><div class="big-icon ok"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#00B37E" stroke-width="2.4"><path d="M4 12l5 5L20 6"/></svg></div><h2>¡Pedido<br>confirmado!</h2><div class="ssub">Recibirás 2 entregas, cada una con su propio seguimiento y tiempo de llegada.</div><div class="mini-cards"><div class="mcard"><span class="logo mcd" style="width:34px;height:34px">${S.mcd}</span><div class="mt"><div class="a">McDonald's Turbo</div><div class="b">Llega en 12 - 15 min</div></div><span class="st-dot ok"></span></div><div class="mcard"><span class="logo turbo" style="width:34px;height:34px">${S.turbo}</span><div class="mt"><div class="a">Turbo</div><div class="b">Llega en 8 - 10 min</div></div><span class="st-dot ok"></span></div></div></div><div class="state-foot"><button class="btn-solid">Ver seguimiento</button></div></div>`,
+  'exito-bnpl':()=>`<div class="fade state"><div class="sclose">✕</div><div class="center"><div class="big-icon ok"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#00B37E" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h2>¡Pedidos creados!<br>Pagas al recibir</h2><div class="ssub">Con BNPL creamos tus 2 pedidos ahora y cobramos cuando se entregue cada uno.</div><div class="mini-cards"><div class="mcard"><span class="logo mcd" style="width:34px;height:34px">${S.mcd}</span><div class="mt"><div class="a">McDonald's Turbo</div><div class="b">Cobro al entregar · $90.850</div></div><span class="st-dot pend"></span></div><div class="mcard"><span class="logo turbo" style="width:34px;height:34px">${S.turbo}</span><div class="mt"><div class="a">Turbo</div><div class="b">Cobro al entregar · $31.600</div></div><span class="st-dot pend"></span></div></div></div><div class="state-foot"><button class="btn-solid">Ver seguimiento</button></div></div>`,
+  'rechazo-fraude':()=>`<div class="fade state"><div class="sclose">‹</div><div class="center"><div class="big-icon err"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#E23744" stroke-width="2"><path d="M12 2 4 5v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V5z"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16" r="0.8" fill="#E23744"/></svg></div><h2>No pudimos procesar<br>tus pedidos</h2><div class="ssub">No pudimos procesar tus pedidos en este momento. No se creó ningún pedido y no se te cobró.</div><div class="note-strip">💡 Mensaje genérico de seguridad: no se muestra el motivo exacto ni se sugiere cambiar la tarjeta.</div></div><div class="state-foot"><button class="btn-solid">Contactar soporte</button></div></div>`,
+  'sin-fondos':()=>`<div class="fade state"><div class="sclose">‹</div><div class="center"><div class="big-icon err"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#E23744" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="13"/><circle cx="12" cy="17" r="0.8" fill="#E23744"/></svg></div><h2>No pudimos<br>procesar el pago</h2><div class="ssub">No pudimos procesar el pago de tus pedidos. Revisa los fondos disponibles o intenta con otra tarjeta.</div><div class="note-strip">💡 Como falló el primer cobro, no se creó ningún pedido (rollback).</div></div><div class="state-foot"><button class="btn-solid">Cambiar tarjeta e intentar de nuevo</button><button class="btn-ghost">Volver al checkout</button></div></div>`,
+  'remedy-segunda':()=>`<div class="fade state"><div class="sclose">‹</div><div class="center" style="justify-content:flex-start;padding-top:40px;"><div class="big-icon err" style="width:72px;height:72px;margin-bottom:18px;background:#FEF5E1;"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#C9941E" stroke-width="2.1"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="19" r="2.5"/><path d="M6 8.5v3c0 2 2 3 4 3h0M18 8.5v3c0 2-2 3-4 3h0"/></svg></div><h2 style="font-size:21px">Una parte de tu pedido<br>no se pudo completar</h2><div class="ssub">Tu pedido de McDonald's Turbo está listo, pero no pudimos completar el de Turbo. ¿Qué quieres hacer?</div><div class="mini-cards"><div class="mcard"><span class="logo mcd" style="width:34px;height:34px">${S.mcd}</span><div class="mt"><div class="a">McDonald's Turbo</div><div class="b">Listo para continuar</div></div><span class="st-dot pend"></span></div><div class="mcard" style="border-color:#F7D4D7;background:#FFF8F8;"><span class="logo turbo" style="width:34px;height:34px">${S.turbo}</span><div class="mt"><div class="a">Turbo</div><div class="b" style="color:#E23744">No se pudo completar</div></div><span class="st-dot err"></span></div></div></div><div class="state-foot"><button class="btn-solid">Continuar solo con McDonald's</button><button class="btn-danger">Cancelar todo</button></div></div>`,
+  'remedy-cancelar':()=>`<div class="fade state"><div class="sclose">‹</div><div class="center" style="justify-content:flex-start;padding-top:40px;"><div class="big-icon" style="width:72px;height:72px;margin-bottom:18px;background:#F3F4F6;"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="8" y1="8" x2="16" y2="16"/><line x1="16" y1="8" x2="8" y2="16"/></svg></div><h2 style="font-size:21px">Cancelamos<br>tus pedidos</h2><div class="ssub">Te devolveremos <b>$90.850</b> del cobro de tu pedido de McDonald's. Elige dónde recibirlo.</div><div class="mini-cards"><button class="opt"><span class="oi"><span class="visa"><span>VISA</span></span></span><div class="ot"><div class="a">Método original</div><div class="b">Crédito *2122 · 3-5 días hábiles</div></div><span class="chev">›</span></button><button class="opt"><span class="oi">💚</span><div class="ot"><div class="a">Créditos Rappi</div><div class="b">Inmediato · úsalo en tu próximo pedido</div></div><span class="chev">›</span></button></div><div class="note-strip">💡 La devolución va por el flujo regular: el usuario elige dónde recibir el dinero.</div></div><div class="state-foot"><button class="btn-solid">Volver al inicio</button></div></div>`,
+};
+/* nota técnica por paso */
+const STEP_META={
+  'checkout-base':{t:'Checkout · Terminar y pagar',n:'El usuario revisa un pedido de 2 tiendas y paga una sola vez. Un método para todas, un cobro por entrega.',g:'Tap "Continuar" → se crean las N órdenes bajo un group_order_id.'},
+  'creando':{t:'Creando tu pedido',n:'Estado de transición: se crean las N órdenes bajo un mismo grupo y se corre la validación de riesgo una sola vez.',g:'Riesgo OK → cobro (sin BNPL) o creación (BNPL). Rechazo → mensaje de seguridad.'},
+  'confirmando':{t:'Confirmando tus pagos',n:'Se ejecuta un cobro por tienda. Cada transacción es independiente; el banco notifica cada cargo por separado.',g:'Todos OK → confirmado · Falla el 1º → rollback · Falla el 2º → decisión del usuario.'},
+  'exito':{t:'Pedido confirmado',n:'Las 2 órdenes se crearon y cobraron. Cada entrega sigue su propio tracking y ETA (un pago, varias entregas).',g:'Fin del flujo feliz → "Ver seguimiento".'},
+  'exito-bnpl':{t:'BNPL · pedidos creados',n:'Con BNPL las 2 órdenes se crean ahora y el cobro ocurre al entregar cada una. No hay cobro en el checkout.',g:'Fin del flujo BNPL → cobro diferido al entregar.'},
+  'rechazo-fraude':{t:'Bloqueo por seguridad',n:'La validación de riesgo bloquea al usuario. No se crea ninguna orden ni se cobra. Aplica con y sin BNPL.',g:'No se sugiere cambiar la tarjeta: es un bloqueo del usuario. CTA → soporte.'},
+  'sin-fondos':{t:'Rechazo del pago (fondos/cupo)',n:'Falla el primer cobro por fondos o cupo. Regla: si falla la 1ª orden, fallan todas — sin órdenes a medias.',g:'"Cambiar tarjeta" → reintenta · "Volver al checkout" → ajustar pedido.'},
+  'remedy-segunda':{t:'Falla la 2ª orden',n:'La 1ª orden quedó lista (propuesta: en espera / on hold) y la 2ª falló. El usuario decide cómo continuar.',g:'"Continuar solo con la 1ª" → confirma una · "Cancelar todo" → reversión/devolución.'},
+  'remedy-cancelar':{t:'Cancelación y devolución',n:'Si el usuario cancela todo, se cancela lo creado y se devuelve lo cobrado por el flujo regular.',g:'El usuario elige el destino de la devolución → fin.'},
+};
+
 function renderCheckout(co){
   document.getElementById('coScreen').innerHTML = co==='3'
     ? checkout({deliveries:[D_MCD,D_TURBO,D_MARKET],oProd:'$155.900',nProd:'$146.850',tip:'$3.000',total:'$153.850',save:'$24.050'})
@@ -584,7 +665,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.getElementById('sec-'+t.dataset.sec).classList.add('active');
 });
 document.querySelectorAll('#toggle button').forEach(b=>b.onclick=()=>{
-  flow=b.dataset.flow;scen=flow==='bnpl'?'A':'D';actIdx=null;
+  flow=b.dataset.flow;scen=flow==='bnpl'?'A':'D';stepIdx=0;
   document.querySelectorAll('#toggle button').forEach(x=>{x.classList.remove('on','nobnpl');});
   b.classList.add('on');if(flow==='nobnpl')b.classList.add('nobnpl');
   renderFlowNote();renderScenCards();renderDetail();
